@@ -1,0 +1,27 @@
+{
+  "name": "boilerplate-backend",
+  "version": "0.1.0",
+  "description": "Boilerplate backend",
+  "main": "index.js",
+  "scripts": {
+    "test": "eslint ."
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/eldarseytablaev/boilerplate-backend.git"
+  },
+  "keywords": [
+    "boilerplate",
+    "backend"
+  ],
+  "author": "Eldar Seytablaev",
+  "license": "UNLICENSED",
+  "private": true,
+  "bugs": {
+    "url": "https://github.com/eldarseytablaev/boilerplate-backend/issues"
+  },
+  "homepage": "https://github.com/eldarseytablaev/boilerplate-backend#readme",
+  "devDependencies": {
+    "eslint": "^6.3.0"
+  }
+}

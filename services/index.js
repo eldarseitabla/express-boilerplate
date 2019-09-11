@@ -1,7 +1,13 @@
 'use strict'
 
-const ProfileService = require('./profileService')
+const Config = require('./Config')
+const Logger = require('./Logger')
+const Postgres = require('./Postgres')
+const Redis = require('./Redis')
 
 module.exports = {
-  ProfileService,
+  Config,
+  Logger,
+  Postgres,
+  Redis,
 }

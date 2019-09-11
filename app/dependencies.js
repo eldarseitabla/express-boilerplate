@@ -14,7 +14,7 @@ const {
 const {
   AuthService,
   ProfileService,
-} = require('../services')
+} = require('../components')
 
 class Dependencies {
   constructor() {
@@ -22,4 +22,6 @@ class Dependencies {
   }
 }
 
-module.exports = Dependencies
+Dependencies.prototype.Dependencies = Dependencies
+
+module.exports = new Dependencies()

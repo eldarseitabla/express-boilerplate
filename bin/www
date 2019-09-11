@@ -4,25 +4,25 @@
  * Module dependencies.
  */
 
-require('./env')
+const config = require('../config')
+const logger = require('../utils/logger')
 
-const { CLUSTER_MODE } = process.env
-
-switch (CLUSTER_MODE) {
-  case 'yes': {
-    const master = require('./cluster/master');
+switch (config.clusterMode) {
+  case true: {
+    const master = require('../app/master');
     (async function () {
+      await master.init(config, logger)
       await master.start()
     }())
     break
   }
-  case 'no': {
-    const worker = require('./cluster/worker');
+  case false: {
+    const server = require('../app/server');
     (async function () {
-      process.on('SIGTERM', worker.stop('SIGTERM'))
-      process.on('SIGINT', worker.stop('SIGINT'))
-      await worker.init()
-      await worker.start()
+      process.on('SIGTERM', server.stop('SIGTERM'))
+      process.on('SIGINT', server.stop('SIGINT'))
+      await server.init(config, logger)
+      await server.start()
     }())
     break
   }

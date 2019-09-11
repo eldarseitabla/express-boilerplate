@@ -17,10 +17,9 @@ node_modules/
 
 package-lock.json
 
-# dotenv environment variables file
-.env
-.env.*
-!.env.example
+# config environment file
+config/config.dev.json
+config/config.prod.json
 
 # Compiled output
 build/

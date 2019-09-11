@@ -2,10 +2,10 @@
   "name": "boilerplate-backend",
   "version": "0.1.0",
   "description": "Boilerplate backend",
-  "main": "index.js",
+  "main": "bin/www",
   "scripts": {
-    "test": "eslint .",
-    "start": "node ./bin/www"
+    "lint": "eslint .",
+    "start": "NODE_ENV=development node ./bin/www"
   },
   "repository": {
     "type": "git",

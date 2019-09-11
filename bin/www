@@ -1,0 +1,32 @@
+#!/usr/bin/env node
+
+/**
+ * Module dependencies.
+ */
+
+require('./env')
+
+const { CLUSTER_MODE } = process.env
+
+switch (CLUSTER_MODE) {
+  case 'yes': {
+    const master = require('./cluster/master');
+    (async function () {
+      await master.start()
+    }())
+    break
+  }
+  case 'no': {
+    const worker = require('./cluster/worker');
+    (async function () {
+      process.on('SIGTERM', worker.stop('SIGTERM'))
+      process.on('SIGINT', worker.stop('SIGINT'))
+      await worker.init()
+      await worker.start()
+    }())
+    break
+  }
+  default: {
+    throw Error('Error env CLUSTER_MODE')
+  }
+}

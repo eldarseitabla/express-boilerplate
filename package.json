@@ -4,7 +4,8 @@
   "description": "Boilerplate backend",
   "main": "index.js",
   "scripts": {
-    "test": "eslint ."
+    "test": "eslint .",
+    "start": "node ./bin/www"
   },
   "repository": {
     "type": "git",

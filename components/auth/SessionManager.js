@@ -1,3 +1,5 @@
+'use strict'
+
 const { promisify } = require('util')
 const _ = require('lodash')
 const RedisSessions = require('redis-sessions')

@@ -1,3 +1,5 @@
+'use strict'
+
 const { Strategy } = require('passport-facebook')
 
 const facebookStrategy = (config, User) => new Strategy(
@@ -20,7 +22,7 @@ const facebookStrategy = (config, User) => new Strategy(
       'picture.type(large)',
     ],
   },
-  async (accessToken, refreshToken, profile, cb) => {
+  async(accessToken, refreshToken, profile, cb) => {
     const {
       name, profileUrl, photos, id,
     } = profile

@@ -1,9 +1,9 @@
 'use strict'
 
-const Auth = require('./Auth')
-const Profile = require('./Profile')
+const auth = require('./auth')
+const profile = require('./profile')
 
 module.exports = {
-  Auth,
-  Profile,
+  auth,
+  profile,
 }

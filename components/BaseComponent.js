@@ -1,14 +1,16 @@
 'use strict'
 
 class BaseComponent {
-  constructor(router) {
+  async _processing() {
+    throw new Error('Need implement abstract method')
+  }
+
+  async getRouter(router) {
     if (!router) {
       throw new Error('No router')
     }
     this._router = router
-  }
-
-  getRouter() {
+    await this._processing(arguments)
     return this._router
   }
 }

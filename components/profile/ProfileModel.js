@@ -1,6 +1,6 @@
-const crypto = require('crypto')
+'use strict'
 
-module.exports = class AuthModel {
+class ProfileModel {
   constructor(logger, db) {
     this._logger = logger
     this._db = db
@@ -20,11 +20,6 @@ module.exports = class AuthModel {
       ],
     }
   }
-
-  static encodePassword(password) {
-    return crypto
-      .createHash('sha256')
-      .update(password)
-      .digest('hex')
-  }
 }
+
+module.exports = ProfileModel

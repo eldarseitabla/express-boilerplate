@@ -1,3 +1,5 @@
+'use strict'
+
 const passport = require('passport')
 const BaseComponent = require('../BaseComponent')
 const AuthController = require('./AuthController')
@@ -8,9 +10,7 @@ const {
 } = require('./authStrategies')
 
 class Auth extends BaseComponent {
-  constructor(router, postgres, redis, config, User, logger) {
-    super(router)
-
+  async _processing(router, postgres, redis, config, logger) {
     passport.use(facebookStrategy(
       config, postgres.models.User,
     ))
@@ -27,4 +27,4 @@ class Auth extends BaseComponent {
   }
 }
 
-module.exports = Auth
+module.exports = new Auth()

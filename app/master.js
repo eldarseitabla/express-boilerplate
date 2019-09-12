@@ -1,11 +1,8 @@
 'use strict'
 
-/* eslint-disable global-require */
-
 const cluster = require('cluster')
 
 const processStr = `${cluster.isMaster ? 'master' : 'worker'} process ${process.pid}`
-const { Paths } = require('../constants')
 
 class Master {
   constructor() {
@@ -19,7 +16,7 @@ class Master {
   }
 
   gracefulClusterShutdown(signal) {
-    return async () => {
+    return async() => {
       if (this._shutdownInProgress) { return }
 
       this._shutdownInProgress = true
@@ -108,7 +105,7 @@ class Master {
     }
 
     // Setting up lifecycle event listeners for worker processes
-    cluster.on('online', async (worker) => {
+    cluster.on('online', async(worker) => {
       this._logger.info(`worker process ${worker.process.pid} is online`)
     })
 

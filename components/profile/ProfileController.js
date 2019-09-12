@@ -1,3 +1,5 @@
+'use strict'
+
 class ProfileController {
   constructor(logger, profileModel) {
     this._logger = logger

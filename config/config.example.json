@@ -2,6 +2,7 @@
   "port": 3005,
   "clusterMode": false,
   "postgresUrl": "",
+  "redisUrl": "",
   "sequelizeConnectionOptions": {},
   "facebookAppId": "",
   "facebookAppSecret": "",

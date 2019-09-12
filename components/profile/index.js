@@ -5,9 +5,7 @@ const ProfileController = require('./ProfileController')
 const ProfileModel = require('./ProfileModel')
 
 class Profile extends BaseComponent {
-  constructor(router, logger) {
-    super(router)
-
+  async _processing(router, logger) {
     const profileModel = new ProfileModel()
     const profileController = new ProfileController(logger, profileModel)
     this._router.post('/', profileController.create.bind(profileController))
@@ -15,4 +13,4 @@ class Profile extends BaseComponent {
   }
 }
 
-module.exports = Profile
+module.exports = new Profile()

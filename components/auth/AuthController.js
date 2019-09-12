@@ -1,3 +1,5 @@
+'use strict'
+
 class AuthController {
   constructor(logger, profileModel, sessionManager) {
     this._logger = logger

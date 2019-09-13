@@ -2,7 +2,7 @@
 Boilerplate Backend
 
 ### Checklist
-- [ ] Project Structure components, directories and files
+- [x] Project Structure components, directories and files
 - [ ] Start application
 - [ ] Error Handling
 - [ ] Logging

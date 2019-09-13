@@ -12,7 +12,7 @@ const logger = require('../utils/logger')
 switch (config.clusterMode) {
   case true: {
     const master = require('../app/master');
-    (async function () {
+    (async function() {
       await master.init(config, logger)
       await master.start()
     }())
@@ -20,7 +20,7 @@ switch (config.clusterMode) {
   }
   case false: {
     const server = require('../app/server');
-    (async function () {
+    (async function() {
       process.on('SIGTERM', server.stop('SIGTERM'))
       process.on('SIGINT', server.stop('SIGINT'))
       await server.init(config, logger)

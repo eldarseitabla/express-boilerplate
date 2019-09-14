@@ -2,7 +2,7 @@
 
 class BaseDatabase {
   async syncConnection() {
-    throw new Error('Need implement this method!')
+    this._logger.error('Need implement this method!')
   }
 }
 module.exports = BaseDatabase

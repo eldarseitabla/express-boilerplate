@@ -5,7 +5,8 @@
   "main": "bin/www",
   "scripts": {
     "lint": "eslint .",
-    "start": "NODE_ENV=development node ./bin/www"
+    "debug": "NODE_ENV=development LOG4JS_CONFIG=./config/log4js.dev.json node --inspect=0.0.0.0:9229 --max_old_space_size=4096 ./bin/www",
+    "start": "NODE_ENV=development LOG4JS_CONFIG=./config/log4js.dev.json node ./bin/www"
   },
   "repository": {
     "type": "git",
@@ -26,8 +27,12 @@
     "eslint": "^6.3.0"
   },
   "dependencies": {
+    "express": "^4.17.1",
+    "log4js": "^5.1.0",
+    "passport": "^0.4.0",
     "passport-facebook": "^3.0.0",
     "redis": "^2.8.0",
+    "redis-sessions": "^2.1.0",
     "sequelize": "^5.18.4"
   }
 }

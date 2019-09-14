@@ -21,6 +21,9 @@ package-lock.json
 config/config.dev.json
 config/config.prod.json
 
+config/log4js.dev.json
+config/log4js.prod.json
+
 # Compiled output
 build/
 dist/

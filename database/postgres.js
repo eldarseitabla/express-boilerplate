@@ -17,7 +17,8 @@ class Postgres extends BaseDatabase {
    * @param connectionOptions
    * @returns {*}
    */
-  async syncConnection(logger, endpointConnection, connectionOptions) {
+  async syncConnection(log4js, endpointConnection, connectionOptions) {
+    const logger = log4js.getLogger('[database.postgres]')
     try {
       /** Create sequelize instance */
       this.sequelizeClient = new Sequelize(endpointConnection, connectionOptions)
@@ -38,13 +39,13 @@ class Postgres extends BaseDatabase {
           model.associate(this.models)
         }
       })
+
       await this.sequelizeClient.authenticate()
       // await this.sequelizeClient.sync({ force: true })
       // await this.sequelizeClient.sync({ alter: true })
       await this.sequelizeClient.sync()
     } catch (error) {
-      logger.error({ message: 'database.postgres.syncConnection', error })
-      throw error
+      logger.error(error)
     }
   }
 }

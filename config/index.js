@@ -2,6 +2,8 @@
 
 const fs = require('fs')
 const path = require('path')
+const log4js = require('log4js')
+const logger = log4js.getLogger('[config.index]')
 
 const DEVELOPMENT = 'development'
 const PRODUCTION = 'production'
@@ -69,7 +71,8 @@ class Config {
         break
       }
       default: {
-        throw new Error('Incorrect NODE_ENV!')
+        filePrefix = 'dev'
+        logger.error('Incorrect NODE_ENV!')
       }
     }
 
@@ -92,7 +95,7 @@ class Config {
       this.authSecret = configs.authSecret
       this.authTokenExpirationTime = configs.authTokenExpirationTime
     } else {
-      throw new Error(`Not found: ${filePath}`)
+      logger.error(`Not found: ${filePath}`)
     }
   }
 }

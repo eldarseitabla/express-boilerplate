@@ -2,33 +2,48 @@
 
 'use strict'
 
-/**
- * Module dependencies.
- */
+if (!process.env.LOG4JS_CONFIG) {
+  process.env.LOG4JS_CONFIG = 'config/log4js.dev.json'
+}
 
 const config = require('../config')
-const logger = require('../utils/logger')
+const log4js = require('log4js')
+
+const logger = log4js.getLogger('[bin.www]')
+
+process.on('unhandledRejection', (reason, p) => {
+  logger.fatal('Possibly Unhandled Rejection at: Promise ', p, ' reason: ', reason)
+})
+process.on('uncaughtException', err => {
+  logger.fatal('Unhandled Exception at: ', err)
+})
+
+const sever = async() => {
+  const server = require('../app/server')
+  await server.init(config, log4js)
+  process.on('SIGTERM', server.stop('SIGTERM'))
+  process.on('SIGINT', server.stop('SIGINT'))
+  await server.start()
+}
 
 switch (config.clusterMode) {
   case true: {
     const master = require('../app/master');
     (async function() {
-      await master.init(config, logger)
+      await master.init(config, log4js)
       await master.start()
     }())
     break
   }
   case false: {
-    const server = require('../app/server');
     (async function() {
-      process.on('SIGTERM', server.stop('SIGTERM'))
-      process.on('SIGINT', server.stop('SIGINT'))
-      await server.init(config, logger)
-      await server.start()
+      await sever()
     }())
     break
   }
   default: {
-    throw Error('Error env CLUSTER_MODE')
+    (async function() {
+      await sever()
+    }())
   }
 }

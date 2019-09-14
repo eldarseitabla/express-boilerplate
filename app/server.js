@@ -12,11 +12,11 @@ class Server {
     this._server = null
   }
 
-  async init(config, logger) {
+  async init(config, log4js) {
     this._config = config
-    this._logger = logger
-    await dependencies.init(app, router, this._config, this._logger)
-    logger.info('Successfully configured!')
+    this._logger = log4js.getLogger('[app.server]')
+    await dependencies.init(app, router, this._config, log4js)
+    this._logger.info('Successfully configured!')
   }
 
   async start() {

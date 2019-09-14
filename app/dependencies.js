@@ -15,8 +15,9 @@ const {
 } = require('../components')
 
 class Dependencies {
-  async init(app, router, config, logger) {
-    const postgresConnection = await postgres.syncConnection(logger, config.postgresUrl, { logging: false, dialect: 'postgres', operatorsAliases: false })
+  async init(app, router, config, log4js) {
+    const logger = log4js.getLogger('[app.dependencies]')
+    const postgresConnection = await postgres.syncConnection(log4js, config.postgresUrl, { logging: false, dialect: 'postgres', operatorsAliases: false })
 
     const redisConnection = await redis.syncConnection(config.redisUrl)
 

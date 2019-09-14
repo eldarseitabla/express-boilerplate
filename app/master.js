@@ -10,9 +10,9 @@ class Master {
     this._hasCleanWorkerExit = true
   }
 
-  async init(config, logger) {
+  async init(config, log4js) {
     this._config = config
-    this._logger = logger
+    this._logger = log4js.getLogger('[app.master]')
   }
 
   gracefulClusterShutdown(signal) {

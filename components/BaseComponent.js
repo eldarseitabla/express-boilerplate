@@ -2,12 +2,12 @@
 
 class BaseComponent {
   async _processing() {
-    throw new Error('Need implement abstract method')
+    this._logger.error('Need implement abstract method')
   }
 
   async getRouter(router) {
     if (!router) {
-      throw new Error('No router')
+      this._logger.error('No router')
     }
     this._router = router
     await this._processing(arguments)

@@ -19,19 +19,17 @@ process.on('uncaughtException', err => {
 })
 
 const sever = async() => {
-  const server = require('../app/server')
-  await server.init(config, log4js)
-  process.on('SIGTERM', server.stop('SIGTERM'))
-  process.on('SIGINT', server.stop('SIGINT'))
+  const { server } = require('../app')
+  await server.init(config)
   await server.start()
 }
 
 switch (config.clusterMode) {
   case true: {
-    const master = require('../app/master');
+    const { clusterApp } = require('../app');
     (async function() {
-      await master.init(config, log4js)
-      await master.start()
+      await clusterApp.init(config)
+      await clusterApp.start()
     }())
     break
   }

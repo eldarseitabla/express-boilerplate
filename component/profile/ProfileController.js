@@ -1,8 +1,11 @@
 'use strict'
 
+/**
+ * @memberOf module:component/profile
+ * @instance
+ */
 class ProfileController {
-  constructor(logger, profileModel) {
-    this._logger = logger
+  constructor(profileModel) {
     this._profileModel = profileModel
   }
 

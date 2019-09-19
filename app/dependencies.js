@@ -12,18 +12,22 @@ const {
 const {
   auth,
   profile,
-} = require('../components')
+} = require('../component')
 
 class Dependencies {
-  async init(app, router, config, log4js) {
-    const logger = log4js.getLogger('[app.dependencies]')
-    const postgresConnection = await postgres.syncConnection(log4js, config.postgresUrl, { logging: false, dialect: 'postgres', operatorsAliases: false })
+  constructor() {
+    this.postgres = null
+    this.redis = null
+  }
 
-    const redisConnection = await redis.syncConnection(config.redisUrl)
+  async init(app, router, config) {
+    this.postgres = await postgres.syncConnection(config.postgresUrl, { logging: false, dialect: 'postgres', operatorsAliases: false })
 
-    app.use('/auth', auth.getRouter(router, postgresConnection, redisConnection, config, logger))
+    this.redis = await redis.syncConnection(config.redisUrl)
 
-    app.use('/profiles', profile.getRouter(router, logger))
+    // app.use('/auth', auth.getRouter(router, this.postgres, this.redis, config))
+
+    app.use('/profiles', profile.getRouter(router))
   }
 }
 

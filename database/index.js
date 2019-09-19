@@ -1,7 +1,8 @@
 'use strict'
 
-const postgres = require('./postgres')
-const redis = require('./redis')
+/** @module database */
+
+const { postgres, redis } = require('./provider')
 
 module.exports = {
   postgres,

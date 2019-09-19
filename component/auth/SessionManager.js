@@ -3,12 +3,16 @@
 const { promisify } = require('util')
 const _ = require('lodash')
 const RedisSessions = require('redis-sessions')
+const logger = require('log4js').getLogger('[component.Base]')
 
 const appName = 'boilerplateapp'
 
-module.exports = class SessionManagerService {
+/**
+ * @memberOf module:component/auth
+ * @instance
+ */
+class SessionManagerService {
   constructor(logger, redis, config) {
-    this._logger = logger
     this._config = config
     this._redisSessions = new RedisSessions({
       // host: '127.0.0.1', // The Redis host.
@@ -29,7 +33,7 @@ module.exports = class SessionManagerService {
       const authHeader = req.headers.authorization
       return authHeader.split(' ')[1]
     } catch (error) {
-      this._logger.error({ message: `ERROR_GET_TOKEN: Error(${error.message})` })
+      logger.error({ message: `ERROR_GET_TOKEN: Error(${error.message})` })
       return null
     }
   }
@@ -48,7 +52,7 @@ module.exports = class SessionManagerService {
         },
       })
     } catch (error) {
-      this._logger.error({ message: `ERROR_CREATE_SESSION: Error(${error.message})` })
+      logger.error({ message: `ERROR_CREATE_SESSION: Error(${error.message})` })
       return null
     }
   }
@@ -64,7 +68,7 @@ module.exports = class SessionManagerService {
       }
       return result
     } catch (error) {
-      this._logger.error({ message: `ERROR_GET_SESSION: Error(${error.message})` })
+      logger.error({ message: `ERROR_GET_SESSION: Error(${error.message})` })
       return null
     }
   }
@@ -74,8 +78,10 @@ module.exports = class SessionManagerService {
       const result = await this._redisKillAsync({ token, app })
       return result.kill
     } catch (error) {
-      this._logger.error({ message: `ERROR_KILL_SESSION: Error(${error.message})` })
+      logger.error({ message: `ERROR_KILL_SESSION: Error(${error.message})` })
       return null
     }
   }
 }
+
+module.exports = SessionManagerService

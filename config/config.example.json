@@ -1,7 +1,7 @@
 {
   "port": 3005,
   "clusterMode": false,
-  "postgresUrl": "",
+  "postgresUrl": "postgres://guest:guest@localhost:5432/boilerplatedb",
   "redisUrl": "",
   "sequelizeConnectionOptions": {},
   "facebookAppId": "",

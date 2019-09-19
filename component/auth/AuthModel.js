@@ -2,9 +2,12 @@
 
 const crypto = require('crypto')
 
+/**
+ * @memberOf module:component/auth
+ * @instance
+ */
 class AuthModel {
-  constructor(logger, db) {
-    this._logger = logger
+  constructor(db) {
     this._db = db
   }
 

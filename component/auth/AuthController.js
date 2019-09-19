@@ -1,8 +1,11 @@
 'use strict'
 
+/**
+ * @memberOf module:component/auth
+ * @instance
+ */
 class AuthController {
-  constructor(logger, profileModel, sessionManager) {
-    this._logger = logger
+  constructor(profileModel, sessionManager) {
     this._profileModel = profileModel
     this._sessionManager = sessionManager
   }

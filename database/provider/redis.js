@@ -2,9 +2,13 @@
 
 const redis = require('redis')
 
-const BaseDatabase = require('./BaseDatabase')
+const Base = require('./Base')
 
-class Redis extends BaseDatabase {
+/**
+ * @memberOf module:database/provider
+ * @instance
+ */
+class Redis extends Base {
   async syncConnection(redisUrl) {
     return redis.createClient(redisUrl)
   }

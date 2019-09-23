@@ -3,8 +3,6 @@
 const cluster = require('cluster')
 const logger = require('log4js').getLogger('[app.master]')
 
-const processStr = `${cluster.isMaster ? 'master' : 'worker'} process ${process.pid}`
-
 class ClusterApp {
   constructor() {
     this._shutdownInProgress = false
@@ -15,86 +13,60 @@ class ClusterApp {
     this._config = config
   }
 
-  gracefulClusterShutdown(signal) {
-    return async() => {
-      if (this._shutdownInProgress) { return }
-
-      this._shutdownInProgress = true
-      this._hasCleanWorkerExit = true
-
-      logger.info(`Got ${signal} on ${processStr}. Graceful shutdown start at ${new Date().toISOString()}`)
-
-      try {
-        if (cluster.isMaster) {
-          logger.info(`${processStr} - worker shutdown successful`)
-          await this.shutdownWorkers(signal)
-        } else if (cluster.isWorker) {
-          await this.stop(signal) // stop yourself after the workers are shutdown if you are master
-        }
-        logger.info(`${processStr} shutdown successful`)
-        this.logAndExit(this._hasCleanWorkerExit ? 0 : 1)
-        process.exit(this._hasCleanWorkerExit ? 0 : 1)
-      } catch (e) {
-        this.logAndExit(1)
-        process.exit(1)
-      }
-    }
-  }
-
-  async shutdownWorkers(signal) {
+  async stop(signal) {
     if (!cluster.isMaster) { return }
 
-    const wIds = Object.keys(cluster.workers)
-    if (wIds.length === 0) { return }
-
-    // Filter all the valid workers
-    const workers = wIds.map(id => cluster.workers[id]).filter(v => v)
-    let workersAlive = 0
-    let funcRun = 0
-    let interval = 0
-
-    // Count the number of alive workers and keep looping until the number is zero.
-    const fn = () => {
-      funcRun += 1
-      workersAlive = 0
-      workers.forEach((worker) => {
-        if (!worker.isDead()) {
-          workersAlive += 1
-          if (funcRun === 1) {
-            // On the first execution of the function, send the received signal to all the workers
-            worker.kill(signal)
-          }
-        }
-      })
-      logger.info(`${workersAlive} workers alive`)
-      if (workersAlive === 0) {
-        // Clear the interval when all workers are dead
-        clearInterval(interval)
-      }
-    }
-    interval = setInterval(fn, 500)
-  }
-
-  async stop(signal) {
+    logger.info(`Master got signal ${signal}`)
     logger.info('stop listening')
-    const server = require('./server.js')
-    await server.stop(signal)()
-    // stop listening
-    // disconnect with db
-    // any other cleanup
+
+    const workers = []
+    for (const id in cluster.workers) {
+       workers.push(new Promise(resolve => {
+        let timeout
+
+        cluster.workers[id].on('listening', async(address) => {
+
+          await cluster.workers[id].send(signal)
+          await cluster.workers[id].disconnect()
+
+          timeout = setTimeout(() => {
+            cluster.workers[id].kill()
+          }, 2000)
+
+        })
+
+        cluster.workers[id].on('disconnect', () => {
+          clearTimeout(timeout)
+          resolve(cluster.workers[id].process.pid)
+        })
+      }))
+    }
+
+    for await (const id of workers) {
+      console.log('Died worker:' + id)
+    }
+    this.logAndExit(this._hasCleanWorkerExit)
   }
 
   async start() {
     if (cluster.isMaster) {
+
       logger.info('Starting Master')
+      process.on('SIGTERM', () => this.stop('SIGTERM'))
+      process.on('SIGINT', () => this.stop('SIGINT'))
       await this.bootWorkers(4)
+
     } else if (cluster.isWorker) {
       const server = require('./server.js')
-      await server.init()
+      await server.init(this._config, true)
       server.start()
+      process.on('message', async(msg) => {
+        if (msg === 'SIGTERM' || msg === 'SIGINT') {
+          // Initiate graceful close of any connections to server
+          await server.stop(msg)
+        }
+      })
     }
-    process.on('SIGTERM', this.gracefulClusterShutdown('SIGTERM'))
-    process.on('SIGINT', this.gracefulClusterShutdown('SIGINT'))
   }
 
   async bootWorkers(numWorkers) {

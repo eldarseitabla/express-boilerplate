@@ -10,11 +10,11 @@ const PRODUCTION = 'production'
 const TEST = 'test'
 
 /**
+ * @property {string} host
  * @property {number} port
  * @property {boolean} clusterMode
- * @property {string} postgresUrl
+ * @property {Object} postgres
  * @property {string} redisUrl
- * @property {Object} sequelizeConnectionOptions
  * @property {string} facebookAppId
  * @property {string} facebookAppSecret
  * @property {string} googleAppId
@@ -26,9 +26,10 @@ const TEST = 'test'
  */
 class Config {
   /**
+   * @property {string} host
    * @property {number} port
    * @property {boolean} clusterMode
-   * @property {string} postgresUrl
+   * @property {Object} postgres
    * @property {string} redisUrl
    * @property {Object} sequelizeConnectionOptions
    * @property {string} facebookAppId
@@ -38,23 +39,23 @@ class Config {
    * @property {string} twitterClientID
    * @property {string} twitterClientSecret
    * @property {string} authSecret
-   * @property {string} authTokenExpirationTime
+   * @property {number} authTokenExpirationTime
    * @returns {void} Nothing
    */
   constructor() {
-    this.port = null
-    this.clusterMode = null
-    this.postgresUrl = null
-    this.redisUrl = null
-    this.sequelizeConnectionOptions = null
-    this.facebookAppId = null
-    this.facebookAppSecret = null
-    this.googleAppId = null
-    this.googleAppSecret = null
-    this.twitterClientID = null
-    this.twitterClientSecret = null
-    this.authSecret = null
-    this.authTokenExpirationTime = null
+    this.host = ''
+    this.port = 0
+    this.clusterMode = false
+    this.postgres = {}
+    this.redisUrl = ''
+    this.facebookAppId = ''
+    this.facebookAppSecret = ''
+    this.googleAppId = ''
+    this.googleAppSecret = ''
+    this.twitterClientID = ''
+    this.twitterClientSecret = ''
+    this.authSecret = ''
+    this.authTokenExpirationTime = 0
 
     let filePrefix
     switch (process.env.NODE_ENV) {
@@ -80,12 +81,11 @@ class Config {
 
     if (fs.existsSync(filePath)) {
       const configs = require(`./config.${filePrefix}.json`)
-
+      this.host = configs.host
       this.port = configs.port
       this.clusterMode = configs.clusterMode
-      this.postgresUrl = configs.postgresUrl
+      this.postgres = configs.postgres
       this.redisUrl = configs.redisUrl
-      this.sequelizeConnectionOptions = configs.sequelizeConnectionOptions
       this.facebookAppId = configs.facebookAppId
       this.facebookAppSecret = configs.facebookAppSecret
       this.googleAppId = configs.googleAppId

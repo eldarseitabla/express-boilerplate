@@ -1,0 +1,22 @@
+version: "3"
+services:
+  postgres:
+    restart: always
+    image: postgres:11.5-alpine
+    container_name: postgres
+    ports:
+      - "5432:5432"
+    volumes:
+      - $DOCKER_VOLUMES/postgres_boilerplate/var/lib/postgresql/data:/var/lib/postgresql/data
+    environment:
+      POSTGRES_USER: guest
+      POSTGRES_PASSWORD: guest
+      POSTGRES_DB: boilerplatedb
+  redis:
+    image: redis:5.0.5-alpine
+    container_name: redis
+    restart: always
+    volumes:
+      - $DOCKER_VOLUMES/redis_boilerplate/data:/data
+    ports:
+      - 6379:6379

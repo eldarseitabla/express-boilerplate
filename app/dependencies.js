@@ -21,7 +21,7 @@ class Dependencies {
   }
 
   async init(app, router, config) {
-    this.postgres = await postgres.syncConnection(config.postgresUrl, { logging: false, dialect: 'postgres', operatorsAliases: false })
+    this.postgres = await postgres.syncConnection(config.postgres.url, config.postgres.options)
 
     this.redis = await redis.syncConnection(config.redisUrl)
 

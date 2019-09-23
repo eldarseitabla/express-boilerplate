@@ -5,7 +5,7 @@ const path = require('path')
 const { Sequelize } = require('sequelize')
 const logger = require('log4js').getLogger('[database.postgres]')
 
-const Base = require('./Base')
+const Base = require('../Base')
 
 /**
  * @memberOf module:database/provider
@@ -14,16 +14,16 @@ const Base = require('./Base')
 class Postgres extends Base {
   /**
    *
-   * @param endpointConnection
-   * @param connectionOptions
+   * @param {string} endpointConnection
+   * @param {Object} options
    * @returns {*}
    */
-  async syncConnection(endpointConnection, connectionOptions) {
+  async syncConnection(endpointConnection, options) {
     /** Create sequelize instance */
-    this.sequelizeClient = new Sequelize(endpointConnection, connectionOptions)
+    this.sequelizeClient = new Sequelize(endpointConnection, options)
     this.models = {}
 
-    const dir = path.join(__dirname, '/../../database/models/postgres')
+    const dir = path.join(__dirname, '/../../../database/models/postgres')
     readdirSync(dir)
       .filter(source => lstatSync(path.join(dir, source)).isDirectory() && !source.includes('__tests__'))
       .forEach((modelDir) => {
@@ -50,4 +50,4 @@ class Postgres extends Base {
   }
 }
 
-module.exports = new Postgres()
+module.exports = Postgres

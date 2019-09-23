@@ -2,7 +2,7 @@
 
 const redis = require('redis')
 
-const Base = require('./Base')
+const Base = require('../Base')
 
 /**
  * @memberOf module:database/provider
@@ -14,4 +14,4 @@ class Redis extends Base {
   }
 }
 
-module.exports = new Redis()
+module.exports = Redis

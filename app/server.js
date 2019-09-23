@@ -10,19 +10,25 @@ const router = express.Router()
 
 class Server {
   constructor() {
-    this._server = null
+    this._config = {}
+    this._server = {}
+    this._clusterMode = false
   }
 
-  async init(config) {
+  async init(config, clusterMode = false) {
     this._config = config
+    this._clusterMode = clusterMode
     await dependencies.init(app, router, this._config)
-    process.on('SIGTERM', this.stop('SIGTERM'))
-    process.on('SIGINT', this.stop('SIGINT'))
+    if (!this._clusterMode) {
+      process.on('SIGTERM', this.stop('SIGTERM'))
+      process.on('SIGINT', this.stop('SIGINT'))
+    }
     logger.info('Successfully configured!')
   }
 
   async start() {
-    const { PORT, HOST } = process.env
+    const HOST = this._config.host
+    const PORT = this._config.port
     this._server = app.listen(PORT, HOST, (error) => {
       if (!error) {
         logger.info(`Running a API server at http://${HOST}:${PORT}`)
@@ -38,18 +44,22 @@ class Server {
       logger.info(`Received signal: ${signal}, running closing connections...`)
       await dependencies.postgres.sequelizeClient.close()
 
-      // await redisClient.end(true)
+      await dependencies.redis.end(true)
 
       await this._server.close(() => {
         logger.info('Closed out remaining connections.')
-        process.exit()
+        if (!this._clusterMode) {
+          process.exit()
+        }
       })
 
       // if after
       await setTimeout(() => {
         console.error('Could not close connections in time, forcefully shutting down') // eslint-disable-line
         logger.error({ message: 'Could not close connections in time, forcefully shutting down', error: new Error() })
-        process.exit()
+        if (!this._clusterMode) {
+          process.exit(1)
+        }
       }, 10 * 1000)
     }
   }

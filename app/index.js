@@ -1,9 +1,9 @@
 'use strict'
 
-const clusterApp = require('./clusterApp')
-const server = require('./server')
+/** @module app */
+
+const App = require('./App')
 
 module.exports = {
-  clusterApp,
-  server,
+  App,
 }

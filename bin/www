@@ -7,41 +7,10 @@ if (!process.env.LOG4JS_CONFIG) {
 }
 
 const config = require('../config')
-const log4js = require('log4js')
 
-const logger = log4js.getLogger('[bin.www]')
+const { App } = require('../app')
+const app = new App(config);
 
-process.on('unhandledRejection', (reason, p) => {
-  logger.fatal('Possibly Unhandled Rejection at: Promise ', p, ' reason: ', reason)
-})
-process.on('uncaughtException', err => {
-  logger.fatal('Unhandled Exception at: ', err)
-})
-
-const sever = async() => {
-  const { server } = require('../app')
-  await server.init(config)
-  await server.start()
-}
-
-switch (config.clusterMode) {
-  case true: {
-    const { clusterApp } = require('../app');
-    (async function() {
-      await clusterApp.init(config)
-      await clusterApp.start()
-    }())
-    break
-  }
-  case false: {
-    (async function() {
-      await sever()
-    }())
-    break
-  }
-  default: {
-    (async function() {
-      await sever()
-    }())
-  }
-}
+(async function() {
+  await app.run(config.clusterMode)
+}())

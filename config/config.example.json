@@ -1,0 +1,23 @@
+{
+  "host": "localhost",
+  "port": 3005,
+  "clusterMode": false,
+  "startTimeoutMs": 240000,
+  "postgres": {
+    "url": "postgres://guest:guest@localhost:5432/boilerplatedb",
+    "options": {
+      "logging": false,
+      "dialect": "postgres"
+    }
+  },
+  "redisUrl": "",
+  "sequelizeConnectionOptions": {},
+  "facebookAppId": "",
+  "facebookAppSecret": "",
+  "googleAppId": "",
+  "googleAppSecret": "",
+  "twitterClientID": "",
+  "twitterClientSecret": "",
+  "authSecret": "",
+  "authTokenExpirationTime": ""
+}

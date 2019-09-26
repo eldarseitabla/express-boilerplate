@@ -10,7 +10,7 @@ const {
 } = require('../database')
 
 const {
-  auth,
+  // auth,
   profile,
 } = require('../component')
 

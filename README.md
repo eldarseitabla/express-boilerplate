@@ -3,9 +3,13 @@ Boilerplate Backend
 
 ### Checklist
 - [x] Project Structure components, directories and files
-- [ ] Start application
-- [ ] Error Handling
-- [ ] Logging
+- [x] Lint
+- [x] Start application
+- [x] Error Handling
+- [x] Logging
+- [x] Test unit
+- [ ] Flow
+- [ ] Check pre-commit
 
 ## Dev
 

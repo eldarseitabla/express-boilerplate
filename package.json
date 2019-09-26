@@ -5,6 +5,8 @@
   "main": "bin/www",
   "scripts": {
     "lint": "eslint .",
+    "lint_branch": "git diff --name-only master | xargs ls -d 2>/dev/null | grep \".js$\" | xargs -n 1 eslint",
+    "test": "mocha test/unit/ --exit --recursive --trace-warnings --file test/unhandledRejectionToCatch.js",
     "debug": "NODE_ENV=development LOG4JS_CONFIG=./config/log4js.dev.json node --inspect=0.0.0.0:9229 --max_old_space_size=4096 ./bin/www",
     "start": "NODE_ENV=development LOG4JS_CONFIG=./config/log4js.dev.json node ./bin/www"
   },
@@ -24,7 +26,8 @@
   },
   "homepage": "https://github.com/eldarseytablaev/boilerplate-backend#readme",
   "devDependencies": {
-    "eslint": "^6.3.0"
+    "eslint": "^6.3.0",
+    "mocha": "^6.2.0"
   },
   "dependencies": {
     "express": "^4.17.1",

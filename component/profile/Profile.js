@@ -10,10 +10,10 @@ const ProfileModel = require('./ProfileModel')
  */
 class Profile extends Base {
   async _processing() {
-    const profileModel = new ProfileModel()
-    const profileController = new ProfileController(profileModel)
-    this._router.post('/', profileController.create.bind(profileController))
-    this._router.get('/', profileController.getList.bind(profileController))
+    this._profileModel = new ProfileModel()
+    this._profileController = new ProfileController(this._profileModel)
+    this._router.post('/', this._profileController.create.bind(this._profileController))
+    this._router.get('/', this._profileController.getList.bind(this._profileController))
   }
 }
 

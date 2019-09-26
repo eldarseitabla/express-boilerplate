@@ -19,15 +19,15 @@ class Auth extends Base {
       config, postgres.models.User,
     ))
 
-    const sessionManager = new SessionManager(redis, config)
-    const authModel = new AuthModel()
+    this._sessionManager = new SessionManager(redis, config)
+    this._authModel = new AuthModel()
 
-    const authController = new AuthController(authModel, sessionManager)
+    this._authController = new AuthController(this._authModel, this._sessionManager)
 
-    this._router.post('/sign-up', authController.signUp.bind(authController))
+    this._router.post('/sign-up', this._authController.signUp.bind(this._authController))
 
     this._router.get('/facebook', passport.authenticate('facebook'))
-    this._router.get('/facebook/callback', authController.facebookCallback.bind(authController))
+    this._router.get('/facebook/callback', this._authController.facebookCallback.bind(this._authController))
   }
 }
 

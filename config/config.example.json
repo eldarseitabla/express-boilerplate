@@ -1,16 +1,24 @@
 {
-  "host": "localhost",
-  "port": 3005,
-  "clusterMode": false,
-  "startTimeoutMs": 240000,
+  "clusterMode": true,
+  "startTimeoutMs": 24000,
+  "redis": {
+    "url": "redis://user:password@127.0.0.1:6379/db-number",
+    "options": {}
+  },
   "postgres": {
-    "url": "postgres://guest:guest@localhost:5432/boilerplatedb",
+    "url": "postgres://guest:guest@localhost:5432/exampledb",
     "options": {
       "logging": false,
       "dialect": "postgres"
     }
   },
-  "redisUrl": "",
+  "mongo": {
+    "url": "mongodb://mongodb0.example.com:27017/exampledb",
+    "options": {
+      "useNewUrlParser": true,
+      "poolSize": 10
+    }
+  },
   "sequelizeConnectionOptions": {},
   "facebookAppId": "",
   "facebookAppSecret": "",
@@ -19,5 +27,5 @@
   "twitterClientID": "",
   "twitterClientSecret": "",
   "authSecret": "",
-  "authTokenExpirationTime": ""
+  "authTokenExpirationTime": 0
 }

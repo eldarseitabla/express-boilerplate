@@ -1,6 +1,4 @@
-'use strict'
-
-const assert = require('assert')
+import { expect } from 'chai';
 
 /**
  * To Catch error "UnhandledPromiseRejectionWarning" when we forget correct write test with promises call
@@ -9,10 +7,10 @@ process.on('unhandledRejection', (error) => {
   describe('Unhandled Rejection', () => {
     it('Promise Handler', () => {
       if (error) {
-        assert.ok(false, `Unhandled Rejection: ${error.stack ? error.stack : error }`)
+        expect(false, `Unhandled Rejection: ${error.stack ? error.stack : error }`).ok;
       } else {
-        assert.ok(false, 'Unhandled Rejection something wrong')
+        expect(false, 'Unhandled Rejection something wrong').ok;
       }
-    })
-  })
-})
+    });
+  });
+});

@@ -12,17 +12,17 @@ Thumbs.db
 .idea/
 .vscode/
 
+# Environment
+.env
+
+config/config.json
+
 # Dependencies
 node_modules/
 
 package-lock.json
 
-# config environment file
-config/config.dev.json
-config/config.prod.json
-
-config/log4js.dev.json
-config/log4js.prod.json
+config/log4js.json
 
 # Compiled output
 build/
@@ -33,5 +33,3 @@ logs
 *.log
 npm-debug.log*
 
-# Output of 'npm pack'
-*.tgz

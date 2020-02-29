@@ -2,18 +2,46 @@
 Boilerplate Backend
 
 ### Checklist
-- [x] Project Structure components, directories and files
+- [x] Project Structure modules, directories and files
 - [x] Lint
 - [x] Start application
 - [x] Error Handling
 - [x] Logging
 - [x] Test unit
-- [ ] Flow
-- [ ] Check pre-commit
+- [x] TypeScript
+- [ ] Config module
+- [ ] Dependency Injection
+- [ ] MongoDb
+- [ ] Postgres
+- [ ] Redis
 
-## Dev
+## Development
 
-## Run need services for development
+### Getting started
+- Install dependencies
+```
+cd <project_name>
+npm i
+```
+
+- Set up env variables
+```
+cp ./.env.example ./.env
+```
+
+- Build and run the project
+```
+npm run build
+npm start
+```
+
+- Development
+```
+npm start:dev
+```
+
+## Docker
+### Run need services for development
 ```bash
 # If not exists
 mkdir DockerVolumes
@@ -24,9 +52,4 @@ export DOCKER_VOLUMES=~/DockerVolumes
 echo $DOCKER_VOLUMES
 
 docker-compose -f docker-compose-dev.yml up -d
-```
-
-## Remove all docker containers
-```bash
-bash script/remove-all-docker-containers.sh
 ```

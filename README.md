@@ -9,6 +9,7 @@ Boilerplate Backend
 - [x] Logging
 - [x] Test unit
 - [x] TypeScript
+- [ ] Prometheus Grafana in App and in Docker Compose
 - [ ] Config module
 - [ ] Dependency Injection
 - [ ] MongoDb
@@ -44,12 +45,15 @@ npm start:dev
 ### Run need services for development
 ```bash
 # If not exists
-mkdir DockerVolumes
+mkdir ~/DockerVolumes
 
-# Add environment path to directory for Volumes
-export DOCKER_VOLUMES=~/DockerVolumes
+# Write env variable
+echo 'export DOCKER_VOLUMES=$HOME/DockerVolumes' >> ~/.zshrc
+# or
+echo 'export DOCKER_VOLUMES=$HOME/DockerVolumes' >> ~/.bash_profile
+
 # Check
 echo $DOCKER_VOLUMES
 
-docker-compose -f docker-compose-dev.yml up -d
+docker-compose up -d
 ```

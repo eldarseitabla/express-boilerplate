@@ -3,6 +3,9 @@ import { promisify } from 'util';
 import { ClientError } from './client.error';
 import ClientType from './client.type';
 import { compileErrorReport } from '../../../utils/functions';
+import prometheusClient from 'prom-client';
+
+const gauge = new prometheusClient.Gauge({ name: 'login_with_custom_id', help: 'login_with_customId' });
 
 const PlayFab: PlayFabModule.IPlayFab = require('playfab-sdk/Scripts/PlayFab/PlayFab'); // eslint-disable-line
 const PlayFabClient: PlayFabClientModule.IPlayFabClient = require('playfab-sdk/Scripts/PlayFab/PlayFabClient'); // eslint-disable-line
@@ -12,6 +15,9 @@ const asyncGetPhotonAuthenticationToken = promisify(PlayFabClient.GetPhotonAuthe
 const asyncGetContentDownloadUrl = promisify(PlayFabClient.GetContentDownloadUrl);
 
 export const loginWithCustomId = async(titleId: string, customId: string) => {
+  gauge.set(1045434535);
+  // gauge.setToCurrentTime();
+  // const endTimeGauge = gauge.startTimer();
   PlayFab.settings.titleId = titleId;
   const requestPrepared: PlayFabClientModels.LoginWithCustomIDRequest = {
     CustomId: customId,
@@ -23,6 +29,7 @@ export const loginWithCustomId = async(titleId: string, customId: string) => {
   } catch (err) {
     result = new ClientError(501, `Something went wrong with API call: ${compileErrorReport(err)}`);
   }
+  // endTimeGauge();
   return result;
 };
 

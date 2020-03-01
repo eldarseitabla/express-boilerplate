@@ -8,6 +8,7 @@ import compression from 'compression'; // compresses requests
 import bodyParser from 'body-parser';
 import path from 'path';
 import cors from 'cors';
+import prometheusClient from 'prom-client';
 
 import {
   errorMiddleware,
@@ -16,6 +17,8 @@ import {
 } from './middleware';
 
 import playFabRouter from './modules/playfab/play-fab.router';
+
+const gauge = new prometheusClient.Gauge({ name: 'test1_guage', help: 'login_with_customId' });
 
 const app = express();
 
@@ -34,6 +37,16 @@ app.use(
 
 /** API routes ... */
 app.use('/playfab', playFabRouter);
+app.get('/test1', async(req, res) => {
+  gauge.setToCurrentTime(); // Sets value to current time
+  const end = gauge.startTimer();
+  await new Promise((resolve) => {
+    setTimeout(() => {
+      end();
+      resolve(res.end());
+    }, 1000);
+  });
+});
 
 /** Error Handler. Provides full stack - remove for production */
 app.use('*', notFoundMiddleware);

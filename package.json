@@ -37,6 +37,7 @@
     "express-validator": "^6.2.0",
     "log4js": "^6.1.2",
     "playfab-sdk": "^2.42.200218",
+    "prom-client": "^12.0.0",
     "response-time": "^2.3.2"
   },
   "devDependencies": {

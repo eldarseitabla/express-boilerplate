@@ -55,5 +55,12 @@ echo 'export DOCKER_VOLUMES=$HOME/DockerVolumes' >> ~/.bash_profile
 # Check
 echo $DOCKER_VOLUMES
 
-docker-compose up -d
+# Build image
+docker build -t eldarseytablaev/boilerplate .
+
+# Run containers
+docker-compose -f docker-compose-dev.yml up
+
+# Stop end remove
+docker-compose -f docker-compose-dev.yml down
 ```

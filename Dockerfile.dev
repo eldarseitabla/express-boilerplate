@@ -1,0 +1,16 @@
+FROM node:12.16.1-alpine
+
+WORKDIR /usr/src/app
+
+COPY package*.json ./
+
+ENV NODE_ENV=development
+RUN npm i
+
+RUN npm run build
+
+COPY . .
+
+EXPOSE 8080
+
+CMD [ "node", "build/server.js" ]

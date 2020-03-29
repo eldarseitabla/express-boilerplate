@@ -1,0 +1,154 @@
+openapi: 3.0.2
+
+info:
+  version: "1"
+  title: "Books"
+  description: "Demo Books"
+
+paths:
+  /books:
+    # Adds a new book #
+    post:
+      summary: Adds a new book
+      tags:
+        - BookApi
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Book"
+      responses:
+        200:
+          $ref: "#/components/responses/BookAddResponse"
+
+    # Gets a books /notes?offset=100&limit=50 #
+    get:
+      summary: Gets a list of books
+      tags:
+        - BookApi
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ArrayOfBooks'
+      parameters:
+        - in: query
+          name: offset
+          schema:
+            type: integer
+            minimum: 0
+            default: 0
+          required: false
+          description: The number of items to skip before starting to collect the result set.
+        - in: query
+          name: limit
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+            default: 10
+          required: false
+          description: The number of items to return.
+
+  # Gets a book #
+  /books/{bookId}:
+    get:
+      summary: Gets a book by ID
+      tags:
+        - BookApi
+      operationId: getBook
+      parameters:
+        - in: path
+          name: bookId
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: A Book object
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Book'
+components:
+  responses:
+    BookAddResponse:
+      description: Book add response
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+              - status
+            properties:
+              status:
+                type: string
+                enum: [success, error]
+              code:
+                type: number
+                example:
+                  - 200
+              message:
+                type: string
+                enum:
+                  - Success
+                  - Request body has wrong format
+    BookGetResponse:
+      description: Gets a Book
+      content:
+        application/json:
+          schema: '#/components/schemas/Book'
+
+    # Links #
+    links:
+      GetBookByBookId:   # <---- arbitrary name for the link
+        operationId: getBook
+        parameters:
+          bookId: '$response.body#/bookId'
+        description: >
+          The `id` value returned in the response can be used as
+          the `bookId` parameter in `GET /books/{bookId}`.
+  schemas:
+    # Book #
+    Book:
+      description: Book schema
+      type: object
+      required:
+        - id
+        - title
+        - date
+        - description
+        - createdAt
+        - updatedAt
+        - authorName
+      properties:
+        title:
+          type: string
+        date:
+          type: string
+          format: date-time
+        author:
+          type: string
+        description:
+          type: string
+        image:
+          type: string
+      example:
+        title: Some book
+        date: '2020-02-10T17:32:28Z'
+        author: Some author
+        description: Some description
+        image: images/some-image.jpg
+
+    # ArrayOfBooks #
+    ArrayOfBooks:
+      description: List of Books
+      type: array
+      items:
+        $ref: '#/components/schemas/Book'
+
+

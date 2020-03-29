@@ -59,6 +59,12 @@
         "message": "Don't use Mocha's global context"
       }
     ],
-    "rest-spread-spacing": ["error", "never"]
+    "rest-spread-spacing": ["error", "never"],
+    "@typescript-eslint/interface-name-prefix": [
+      "error",
+      {
+        "prefixWithI": "always"
+      }
+    ]
   }
 }

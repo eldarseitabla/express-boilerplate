@@ -1,55 +1,50 @@
-/// <reference types="playfab-sdk/Scripts/typings/PlayFab/PlayFab" />
-/// <reference types="playfab-sdk/Scripts/typings/PlayFab/PlayFabClient" />
-/// <reference types="playfab-sdk/Scripts/typings/PlayFab/PlayFabServer" />
-/// <reference types="playfab-sdk/Scripts/typings/PlayFab/PlayFabAdmin" />
-
+import 'reflect-metadata'; // Important to inversify
+import { Container } from 'inversify';
 import express from 'express';
-import compression from 'compression'; // compresses requests
-import bodyParser from 'body-parser';
-import path from 'path';
 import cors from 'cors';
-import prometheusClient from 'prom-client';
+import * as bodyParser from 'body-parser';
+import swaggerUi from 'swagger-ui-express';
+import TYPES from './constant/types';
+import { config } from './config';
 
 import {
   errorMiddleware,
   notFoundMiddleware,
   performTimingMiddleware,
+  headerCacheControl,
 } from './middleware';
 
-import playFabRouter from './modules/playfab/play-fab.router';
+import books, { IBooksController, BooksController } from './modules/books/books.controller';
+import users, { IUsersController, UsersController } from './modules/users/Users.controller';
 
-const gauge = new prometheusClient.Gauge({ name: 'test1_guage', help: 'login_with_customId' });
+import { IBooksService, BooksService } from './modules/books/books.service';
+import { IUsersService, UsersService } from './modules/users/users.service';
+import path from 'path';
 
-const app = express();
+const container: Container = new Container();
 
-// Express configuration
-app.set('port', process.env.PORT || 3000);
-app.set('HOST', process.env.HOST || 'localhost');
+container.bind<IBooksController>(TYPES.BooksController).to(BooksController).inSingletonScope();
+container.bind<IBooksService>(TYPES.BooksService).to(BooksService).inSingletonScope();
+
+container.bind<IUsersController>(TYPES.BooksController).to(UsersController).inSingletonScope();
+container.bind<IUsersService>(TYPES.BooksService).to(UsersService).inSingletonScope();
+
+const app: express.Application = express();
 app.use(performTimingMiddleware());
 app.use(cors());
-app.use(compression());
-app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
-/** Prepare for swagger */
+app.use(bodyParser.json());
+
 app.use(
   express.static(path.join(__dirname, 'public'), { maxAge: 31557600000 })
 );
 
-/** API routes ... */
-app.use('/playfab', playFabRouter);
-app.get('/test1', async(req, res) => {
-  gauge.setToCurrentTime(); // Sets value to current time
-  const end = gauge.startTimer();
-  await new Promise((resolve) => {
-    setTimeout(() => {
-      end();
-      resolve(res.end());
-    }, 1000);
-  });
-});
-
-/** Error Handler. Provides full stack - remove for production */
+app.use('/*', headerCacheControl);
+app.get('/', (req, res) => { res.sendFile('./public/index.html'); });
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(null, config.swaggerUi.options));
+app.use('/books', books);
+app.use('/users', users);
 app.use('*', notFoundMiddleware);
 app.use(errorMiddleware);
 
-export default app;
+export { app, container };

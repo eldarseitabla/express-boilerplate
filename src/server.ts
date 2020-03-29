@@ -1,20 +1,22 @@
 import { getLogger } from 'log4js';
 import './utils/env';
-import app from './app';
+import { Server } from 'http';
+import { app } from './app';
+import { config } from './config';
 
 const logger = getLogger('[server]');
 
-const server = app.listen(app.get('port'), app.get('host'), (error) => {
-  if (!error) {
-    logger.info(
-      'App is running at http://localhost:%d in %s mode',
-      app.get('port'),
-      app.get('env')
-    );
-  } else {
-    logger.error({ message: 'Error start server', error });
+let server: Server;
+(async() => {
+  try {
+    server = await app.listen(config.port, config.host);
+    logger.info('App is running at http://%s:%d in %s mode', config.host, config.port, process.env.NODE_ENV);
+  } catch (err) {
+    console.error(err);
+    logger.error({ message: 'Error start server', err });
+    process.exit(1);
   }
-});
+})();
 
 process.on('SIGINT', () => {
   logger.debug('Start Signal is SIGINT ...');

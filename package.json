@@ -5,11 +5,12 @@
   "main": "./dist/server.js",
   "scripts": {
     "start": "NODE_ENV=production npm run serve",
-    "start:dev": "NODE_ENV=development npm run build && npm run serve",
-    "build": "rm -rf ./dist && npm run build-ts && npm run lint",
+    "start:dev": "npm run build && NODE_ENV=development npm run serve",
+    "build": "rm -rf ./dist && npm run build-ts && npm run lint && npm run copy-static-assets",
     "serve": "node dist/server.js",
     "test": "NODE_ENV=test mocha test/unit/ --exit --recursive --trace-warnings --file test/unhandledRejectionToCatch.js",
     "build-ts": "tsc",
+    "copy-static-assets": "ts-node copyStaticAssets.ts",
     "lint": "tsc --noEmit && eslint \"**/*.{js,ts}\" --quiet --fix"
   },
   "repository": {
@@ -35,10 +36,13 @@
     "dotenv": "^8.2.0",
     "express": "^4.17.1",
     "express-validator": "^6.2.0",
+    "inversify": "^5.0.1",
     "log4js": "^6.1.2",
     "playfab-sdk": "^2.42.200218",
     "prom-client": "^12.0.0",
-    "response-time": "^2.3.2"
+    "reflect-metadata": "^0.1.13",
+    "response-time": "^2.3.2",
+    "swagger-ui-express": "^4.1.4"
   },
   "devDependencies": {
     "@types/body-parser": "^1.17.1",
@@ -50,12 +54,15 @@
     "@types/mocha": "^7.0.1",
     "@types/node": "^12.7.8",
     "@types/response-time": "^2.3.4",
+    "@types/shelljs": "^0.8.7",
     "@types/supertest": "^2.0.8",
+    "@types/swagger-ui-express": "^4.1.2",
     "@typescript-eslint/eslint-plugin": "^2.3.1",
     "@typescript-eslint/parser": "^2.3.1",
     "chai": "^4.2.0",
     "eslint": "^6.4.0",
     "mocha": "^7.1.0",
+    "shelljs": "^0.8.3",
     "supertest": "^4.0.2",
     "ts-node": "^8.4.1",
     "typescript": "^3.6.3"

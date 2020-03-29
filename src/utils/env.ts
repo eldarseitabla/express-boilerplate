@@ -1,14 +1,22 @@
 import fs from 'fs';
 import dotenv from 'dotenv';
-import { configure, getLogger } from 'log4js';
+import { configure } from 'log4js';
+
+if (fs.existsSync('.env')) {
+  dotenv.config({ path: '.env' });
+} else {
+  console.error('.env file does not exist');
+  process.exit(1);
+}
+import { config } from '../config';
 
 if (process.env.NODE_ENV === 'production') {
   configure({
     appenders: {
       logstash: {
         type: '@log4js-node/logstashudp',
-        host: 'localhost',
-        port: 3001
+        host: config.logstash.host,
+        port: config.logstash.port
       }
     },
     categories: {
@@ -30,13 +38,3 @@ if (process.env.NODE_ENV === 'production') {
     }
   });
 }
-
-const logger = getLogger('[util.env]');
-
-if (fs.existsSync('.env')) {
-  dotenv.config({ path: '.env' });
-} else {
-  logger.error('.env file does not exist');
-  process.exit(1);
-}
-

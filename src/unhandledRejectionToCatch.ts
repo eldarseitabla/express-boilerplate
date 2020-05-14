@@ -1,15 +1,15 @@
-import { expect } from 'chai';
+import { ok } from 'assert';
 
 /**
  * To Catch error "UnhandledPromiseRejectionWarning" when we forget correct write test with promises call
  */
-process.on('unhandledRejection', (error) => {
+process.on('unhandledRejection', (error: Error) => {
   describe('Unhandled Rejection', () => {
     it('Promise Handler', () => {
       if (error) {
-        expect(false, `Unhandled Rejection: ${error.stack ? error.stack : error }`).ok;
+        ok(false, `Unhandled Rejection: ${error.stack ? error.stack : error}`);
       } else {
-        expect(false, 'Unhandled Rejection something wrong').ok;
+        ok(false, 'Unhandled Rejection something wrong');
       }
     });
   });

@@ -1,4 +1,3 @@
-import { Response, Request, NextFunction } from 'express';
 import responseTime from 'response-time';
 import { getLogger } from 'log4js';
 

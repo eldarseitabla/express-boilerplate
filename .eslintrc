@@ -1,6 +1,14 @@
 {
+  "root": true,
   "parser": "@typescript-eslint/parser",
-  "extends": ["plugin:@typescript-eslint/recommended"],
+  "plugins": [
+    "@typescript-eslint"
+  ],
+  "extends": [
+    "eslint:recommended",
+    "plugin:@typescript-eslint/eslint-recommended",
+    "plugin:@typescript-eslint/recommended"
+  ],
   "parserOptions": {
     "ecmaVersion": 2018,
     "sourceType": "module"
@@ -16,22 +24,19 @@
     "@typescript-eslint/explicit-function-return-type": "off",
     "@typescript-eslint/no-explicit-any": 1,
     "@typescript-eslint/no-inferrable-types": [
-      "warn", {
-        "ignoreParameters": true
-      }
+      "warn", {"ignoreParameters": true}
     ],
-    "strict": [
-      "error",
-      "global"
-    ],
+    "strict": ["error", "global"],
     "@typescript-eslint/no-unused-vars": "warn",
-    "indent": ["error", 2, {
-      "MemberExpression": 1,
-      "SwitchCase": 1
-    }],
+    "indent": ["error", 2, {"MemberExpression": 1, "SwitchCase": 1}],
     "@typescript-eslint/no-namespace": "off",
     "max-len": "off",
-    "no-underscore-dangle": ["error", { "allowAfterThis": true }],
+    "no-underscore-dangle": [
+      "error",
+      {
+        "allowAfterThis": true
+      }
+    ],
     "comma-style": "error",
     "consistent-this": [
       "error",
@@ -46,7 +51,7 @@
     "space-before-blocks": "error",
     "space-before-function-paren": [
       "error",
-      "never"
+      "always"
     ],
     "space-infix-ops": "error",
     "space-unary-ops": "error",
@@ -59,12 +64,15 @@
         "message": "Don't use Mocha's global context"
       }
     ],
-    "rest-spread-spacing": ["error", "never"],
-    "@typescript-eslint/interface-name-prefix": [
+    "rest-spread-spacing": [
       "error",
-      {
-        "prefixWithI": "always"
-      }
-    ]
+      "never"
+    ],
+    "@typescript-eslint/interface-name-prefix": [
+      "error", {"prefixWithI": "never"}
+    ],
+    "object-curly-spacing": ["error", "always"],
+    "eol-last": ["error", "always"],
+    "comma-dangle": ["error", "always-multiline"]
   }
 }

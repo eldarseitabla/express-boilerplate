@@ -1,5 +1,5 @@
-# boilerplate-backend
-Boilerplate Backend
+# express-boilerplate
+Express Boilerplate
 
 ### Checklist
 - [x] Project Structure modules, directories and files
@@ -7,11 +7,14 @@ Boilerplate Backend
 - [x] Start application
 - [x] Error Handling
 - [x] Logging
-- [x] Test unit
 - [x] TypeScript
+- [x] Example Unit-test
+- [x] Config module
+- [x] Dependency Injection
+- [ ] Authorization
+- [ ] Implement routes with in memory in variable data
+- [ ] Unit tests for routes
 - [ ] Prometheus Grafana in App and in Docker Compose
-- [ ] Config module
-- [ ] Dependency Injection
 - [ ] MongoDb
 - [ ] Postgres
 - [ ] Redis

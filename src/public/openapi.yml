@@ -2,10 +2,25 @@ openapi: 3.0.2
 
 info:
   version: "1"
-  title: "Books"
-  description: "Demo Books"
+  title: "Express Boilerplate"
+  description: "Demo Express Boilerplate"
 
 paths:
+  /users:
+    post:
+      summary: Sign Up User
+      tags:
+        - SignUpUser
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UserSignUp"
+      responses:
+        200:
+          $ref: "#/components/responses/Response"
+
   /books:
     # Adds a new book #
     post:
@@ -20,7 +35,7 @@ paths:
               $ref: "#/components/schemas/Book"
       responses:
         200:
-          $ref: "#/components/responses/BookAddResponse"
+          $ref: "#/components/responses/Response"
 
     # Gets a books /notes?offset=100&limit=50 #
     get:
@@ -76,8 +91,8 @@ paths:
                 $ref: '#/components/schemas/Book'
 components:
   responses:
-    BookAddResponse:
-      description: Book add response
+    Response:
+      description: Common response
       content:
         application/json:
           schema:
@@ -87,7 +102,7 @@ components:
             properties:
               status:
                 type: string
-                enum: [success, error]
+                enum: [ok, error]
               code:
                 type: number
                 example:
@@ -113,7 +128,24 @@ components:
           The `id` value returned in the response can be used as
           the `bookId` parameter in `GET /books/{bookId}`.
   schemas:
-    # Book #
+    UserSignUp:
+      description: UserSignUp
+      type: object
+      required:
+        - email
+        - password
+        - confirmPassword
+      properties:
+        email:
+          type: string
+        password:
+          type: string
+        confirmPassword:
+          type: string
+      example:
+        email: test@email.com
+        password: userpassword
+        confirmPassword: userpassword
     Book:
       description: Book schema
       type: object

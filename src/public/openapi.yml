@@ -1,4 +1,4 @@
-openapi: 3.0.2
+openapi: 3.0.3
 
 info:
   version: "1"
@@ -10,7 +10,7 @@ paths:
     post:
       summary: Sign Up User
       tags:
-        - SignUpUser
+        - UserApi
       requestBody:
         required: true
         content:
@@ -20,6 +20,41 @@ paths:
       responses:
         200:
           $ref: "#/components/responses/Response"
+
+    get:
+      summary: Get all users
+      tags:
+        - UserApi
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Users"
+  /users/{id}:
+    delete:
+      summary: Delete account
+      tags:
+        - UserApi
+      operationId: deleteUserById
+      parameters:
+        - name: id
+          in: path
+          description: User ID
+          required: true
+          schema:
+            type: string
+      responses:
+        204:
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                example: {
+                  msg: "Your account has been deleted."
+                }
 
   /books:
     # Adds a new book #
@@ -48,7 +83,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ArrayOfBooks'
+                $ref: '#/components/schemas/books'
       parameters:
         - in: query
           name: offset
@@ -175,12 +210,26 @@ components:
         author: Some author
         description: Some description
         image: images/some-image.jpg
+    User:
+      example: {
+        tokens: [],
+        _id: "5eb9a1968b8d5b36155290ac",
+        email: "test@email.com",
+        password: "$2a$10$kcq5VxeRO7ZS01FsUAqshOG.6b9czvW27beI6jSfsX7CHdYR4cL2m",
+        createdAt: "2020-05-11T19:03:50.581Z",
+        updatedAt: "2020-05-11T19:03:50.581Z",
+        __v: 0
+      }
 
     # ArrayOfBooks #
-    ArrayOfBooks:
+    Books:
       description: List of Books
       type: array
       items:
         $ref: '#/components/schemas/Book'
 
-
+    Users:
+      description: List of Users
+      type: array
+      items:
+        $ref: '#/components/schemas/User'

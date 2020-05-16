@@ -51,6 +51,11 @@ export class UserController {
     }
   }
 
+  async find (req: Request, res: Response): Promise<void> {
+    const users: UserDocument[] = await User.find();
+    res.send(users);
+  }
+
   async signIn (req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
       await check('email', 'Email is not valid').isEmail().run(req);
@@ -138,11 +143,11 @@ export class UserController {
   }
 
   async deleteAccount (req: Request, res: Response, next: NextFunction): Promise<void> {
-    const user = req.user as UserDocument;
+    const { id: userId } = req.params;
     try {
-      await User.remove({ _id: user.id });
+      await User.remove({ _id: userId });
       req.logout();
-      res.send({ msg: 'Your account has been deleted.' });
+      res.status(204).send({ msg: 'Your account has been deleted.' });
     } catch (err) {
       next(err);
     }
@@ -216,6 +221,9 @@ userRouter.post('sign-in', async (req: Request, res: Response, next: NextFunctio
 userRouter.get('sign-out', async (req: Request) => {
   container.get<UserController>(DITypes.TYPES.UserController).signOut(req);
 });
+userRouter.get('', async (req: Request, res: Response) => {
+  container.get<UserController>(DITypes.TYPES.UserController).find(req, res);
+});
 userRouter.get('facebook', passport.authenticate('facebook', {
   scope: ['email', 'public_profile'],
 } ));
@@ -231,7 +239,7 @@ userRouter.post('reset', async (req: Request, res: Response, next: NextFunction)
 userRouter.post('forgot', async (req: Request, res: Response, next: NextFunction) => {
   container.get<UserController>(DITypes.TYPES.UserController).forgot(req, res, next);
 });
-userRouter.post('delete-account', async (req: Request, res: Response, next: NextFunction) => {
+userRouter.delete('/:id', async (req: Request, res: Response, next: NextFunction) => {
   container.get<UserController>(DITypes.TYPES.UserController).deleteAccount(req, res, next);
 });
 userRouter.post('update-password', async (req: Request, res: Response, next: NextFunction) => {

@@ -64,7 +64,7 @@ userSchema.pre('save', function save (next) {
   if (!user.isModified('password')) { return next(); }
   bcrypt.genSalt(10, (err: Error, salt: string) => {
     if (err) { return next(err); }
-    bcrypt.hash(user.password, salt, undefined, (err: mongoose.Error, hash: string) => {
+    bcrypt.hash(user.password, salt, null, (err: mongoose.Error, hash: string) => {
       if (err) { return next(err); }
       user.password = hash;
       next();
@@ -72,13 +72,12 @@ userSchema.pre('save', function save (next) {
   });
 });
 
-const comparePassword: comparePasswordFunction = function (candidatePassword, cb) {
-  bcrypt.compare(candidatePassword, this.password, (err: mongoose.Error, isMatch: boolean) => {
-    cb(err, isMatch);
+userSchema.methods.comparePassword = function (candidatePassword: string, cb: Function) {
+  bcrypt.compare(candidatePassword, this.password, function (err, isMatch) {
+    if (err) return cb(err);
+    cb(null, isMatch);
   });
 };
-
-userSchema.methods.comparePassword = comparePassword;
 
 /**
  * Helper method for getting user's gravatar.

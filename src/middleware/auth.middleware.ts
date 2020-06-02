@@ -1,27 +1,27 @@
 import { Response, Request, NextFunction } from 'express';
-import _ from 'lodash';
-import { UserDocument } from '../models';
+import { config } from '../config';
+import httpErrors from 'http-errors';
+import { verifyToken } from '../utils/token';
+import { PayloadToken } from '../services';
 
-/**
- * Login Required middleware.
- */
-export const isAuthenticated = (req: Request, res: Response, next: NextFunction) => {
-  if (req.isAuthenticated()) {
-    return next();
-  }
-  res.redirect('/login');
-};
+export interface VerifyTokenResult extends PayloadToken {
+  userId: string;
+  iat: number;
+  exp: number;
+  iss: string;
+}
 
-/**
- * Authorization Required middleware.
- */
-export const isAuthorized = (req: Request, res: Response, next: NextFunction) => {
-  const provider = req.path.split('/').slice(-1)[0];
-
-  const user = req.user as UserDocument;
-  if (_.find(user.tokens, { kind: provider })) {
+export const authenticate = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const authorization: string = req.headers.authorization || '';
+    if (!authorization) {
+      return next(new httpErrors.Forbidden(`${req.method} ${req.originalUrl}`));
+    }
+    const token = authorization.split(' ')[1];
+    const tokenPayload: VerifyTokenResult = await verifyToken<VerifyTokenResult>(token, config.token);
+    res.locals.tokenPayload = { userId: tokenPayload.userId };
     next();
-  } else {
-    res.redirect(`/auth/${provider}`);
+  } catch {
+    next(new httpErrors.Forbidden(`${req.method} ${req.originalUrl}`));
   }
 };

@@ -6,7 +6,7 @@ import httpErrors from 'http-errors';
  * Uses status code from error if present.
  */
 const notFoundMiddleware = (req: Request, res: Response, next: NextFunction) => {
-  const error = new httpErrors.NotFound(`Not Found URL: ${req.originalUrl}`);
+  const error = new httpErrors.NotFound(`${req.method} ${req.originalUrl}`);
   next(error);
 };
 

@@ -12,7 +12,7 @@ const errorMiddleware: ErrorRequestHandler = async (error: httpErrors.HttpError,
   if (error) {
     const status = error.statusCode || 500;
     res.status(status);
-    const message = { message: error.message, ...error };
+    const message = { ...error };
     if (/* !config.error.emitStackTrace */ !(false)) { // eslint-disable-line
       delete message.stack;
     }

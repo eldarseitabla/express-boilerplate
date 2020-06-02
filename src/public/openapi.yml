@@ -6,7 +6,7 @@ info:
   description: "Demo Express Boilerplate"
 
 paths:
-  /users:
+  /auth/sign-up:
     post:
       summary: Sign Up User
       tags:
@@ -17,6 +17,20 @@ paths:
           application/json:
             schema:
               $ref: "#/components/schemas/UserSignUp"
+      responses:
+        200:
+          $ref: "#/components/responses/Response"
+  /auth/sign-in:
+    post:
+      summary: Sign In User
+      tags:
+        - UserApi
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UserSignIn"
       responses:
         200:
           $ref: "#/components/responses/Response"
@@ -32,6 +46,13 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Users"
+    delete:
+      summary: Delete all users
+      operationId: deleteAllUsers
+      responses:
+        204:
+          description: Success
+
   /users/{id}:
     delete:
       summary: Delete account
@@ -47,14 +68,7 @@ paths:
             type: string
       responses:
         204:
-          description: OK
-          content:
-            application/json:
-              schema:
-                type: object
-                example: {
-                  msg: "Your account has been deleted."
-                }
+          description: Success
 
   /books:
     # Adds a new book #
@@ -181,6 +195,20 @@ components:
         email: test@email.com
         password: userpassword
         confirmPassword: userpassword
+    UserSignIn:
+      description: UserSignIn
+      type: object
+      required:
+        - email
+        - password
+      properties:
+        email:
+          type: string
+        password:
+          type: string
+      example:
+        email: test@email.com
+        password: userpassword
     Book:
       description: Book schema
       type: object

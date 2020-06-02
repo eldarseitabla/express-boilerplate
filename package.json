@@ -5,10 +5,12 @@
   "main": "./dist/server.js",
   "scripts": {
     "start": "node dist/server.js",
-    "clean": "rm -rf ./dist",
+    "pretest": "npm run clean && npm run build",
+    "clean": "rm -rf ./dist *.tsbuildinfo",
     "build": "npm run build-ts && npm run copy-static-assets",
     "start:dev": "node -r ts-node/register dist/server.js",
-    "test": "mocha -r ts-node/register src/test/**/*.spec.ts --exit --trace-warnings --file src/unhandledRejectionToCatch.ts",
+    "test:acceptance": "mocha dist/tests/acceptance",
+    "test": "NODE_ENV=test npm run test:acceptance",
     "build-ts": "tsc",
     "copy-static-assets": "ts-node copyStaticAssets.ts",
     "lint": "tsc --noEmit && eslint \"**/*.{js,ts}\"",
@@ -71,6 +73,7 @@
     "@types/express": "^4.17.1",
     "@types/express-session": "^1.17.0",
     "@types/http-errors": "^1.6.3",
+    "@types/jsonwebtoken": "^8.5.0",
     "@types/lodash": "^4.14.150",
     "@types/mocha": "^7.0.1",
     "@types/mongodb": "^3.5.16",
@@ -91,6 +94,7 @@
     "mocha": "^7.1.0",
     "shelljs": "^0.8.3",
     "supertest": "^4.0.2",
+    "testcontainers": "^2.9.0",
     "ts-node": "^8.4.1",
     "typescript": "^3.6.3"
   }

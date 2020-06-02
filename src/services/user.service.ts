@@ -1,20 +1,33 @@
 import { injectable } from 'inversify';
 import crypto from 'crypto';
 import nodemailer from 'nodemailer';
+import httpErrors from 'http-errors';
 import { UserMongo as User, UserDocument } from '../models';
 
 @injectable()
 export class UserService {
+  async signUp (email: string, password: string): Promise<void> {
+    const user: UserDocument = new User({
+      email,
+      password,
+    });
+    const existingUser = await User.findOne({ email });
+    if (existingUser) {
+      throw new httpErrors.Conflict('Account with that email address already exists.');
+    }
+    await user.save();
+  }
+
   async resetPassword (token: string, password: string): Promise<UserDocument> {
-    const user: UserDocument = await User.findOne({ passwordResetToken: token })
+    const user: UserDocument | null = await User.findOne({ passwordResetToken: token })
       .where('passwordResetExpires').gt(Date.now())
       .exec();
     if (!user) {
       throw new Error('Password reset token is invalid or has expired.');
     }
     user.password = password;
-    user.passwordResetToken = undefined;
-    user.passwordResetExpires = undefined;
+    user.passwordResetToken = '';
+    user.passwordResetExpires = new Date();
     await user.save();
     return user;
   }
@@ -44,7 +57,7 @@ export class UserService {
   }
 
   async setRandomToken (token: string, email: string): Promise<UserDocument> {
-    const user: UserDocument = await User.findOne({ email });
+    const user: UserDocument | null = await User.findOne({ email });
     if (!user) {
       throw new Error('Account with that email address does not exist.');
     }

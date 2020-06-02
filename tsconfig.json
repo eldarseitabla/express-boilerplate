@@ -1,24 +1,36 @@
 {
+  "$schema": "http://json.schemastore.org/tsconfig",
   "compilerOptions": {
-    "module": "commonjs",
-    "esModuleInterop": true,
-    "allowSyntheticDefaultImports": true,
-    "target": "es2018",
-    "noImplicitAny": true,
-    "moduleResolution": "node",
-    "experimentalDecorators": true,
-    "emitDecoratorMetadata": true,
-    "sourceMap": true,
     "outDir": "dist",
+    "rootDir": "src",
     "baseUrl": ".",
     "paths": {
       "*": [
         "node_modules/*",
         "src/types/*"
       ]
-    }
+    },
+    "emitDecoratorMetadata": true,
+    "experimentalDecorators": true,
+    "resolveJsonModule": true,
+    "skipLibCheck": true,
+    "strict": true,
+
+    // FIXME(bajtos) LB4 is not compatible with this setting yet
+    "strictPropertyInitialization": false,
+
+    "incremental": true,
+
+    "lib": ["es2018", "esnext.asynciterable"],
+    "module": "commonjs",
+    "esModuleInterop": true,
+    "moduleResolution": "node",
+    "target": "es2017",
+    "sourceMap": true,
+    "declaration": true,
+    "importHelpers": true
   },
   "include": [
-    "src/**/*"
+    "src"
   ]
 }

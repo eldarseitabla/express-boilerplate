@@ -12,11 +12,15 @@ Express Boilerplate
 - [x] Config
 - [x] Dependency Injection
 - [x] MongoDb
-- [x] Authentication
+- [ ] Authentication
+    - [x] Local
+    - [ ] Facebook
+    - [ ] Google
+    - [ ] Twitter
 - [ ] Example Product
 - [ ] Authorization
 - [ ] Logging to Logstash
-- [ ] Memory Prometheus Grafana
+- [ ] Metrics via Prometheus Grafana
     - [ ] current memory consumption;
     - [ ] current processor consumption;
     - [ ] tick frequency;

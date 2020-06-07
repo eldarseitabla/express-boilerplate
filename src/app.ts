@@ -17,7 +17,7 @@ import {
   headerCacheControl,
 } from './middleware';
 import { userRouter, UserController, bookRouter, BookController, authRouter, AuthController } from './controllers';
-import { UserService, BookService, AuthService, RefreshTokenService } from './services';
+import { UserService, BookService, TokenService } from './services';
 
 const container: Container = new Container();
 
@@ -27,8 +27,7 @@ container.bind<BookController>(DITypes.TYPES.BookController).to(BookController).
 
 container.bind<UserService>(DITypes.TYPES.UserService).to(UserService).inSingletonScope();
 container.bind<BookService>(DITypes.TYPES.BookService).to(BookService).inSingletonScope();
-container.bind<RefreshTokenService>(DITypes.TYPES.RefreshTokenService).to(RefreshTokenService).inSingletonScope();
-container.bind<AuthService>(DITypes.TYPES.AuthService).to(AuthService).inSingletonScope();
+container.bind<TokenService>(DITypes.TYPES.TokenService).to(TokenService).inSingletonScope();
 
 async function init (): Promise<void> {
   await mongoose.connect(config.mongo.url, config.mongo.options);

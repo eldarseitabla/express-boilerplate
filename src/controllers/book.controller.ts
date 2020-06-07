@@ -8,10 +8,10 @@ import { BookService } from '../services';
 export class BookController {
   constructor (@inject(DITypes.TYPES.BookService) private bookService: BookService) {}
 
-  async findBook (req: Request, res: Response, next: NextFunction): Promise<void> {
+  async getBooks (req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
       this.bookService.findBook();
-      res.send({});
+      res.send([]);
     } catch (err) {
       next(err);
     }
@@ -58,7 +58,7 @@ export class BookController {
 export const bookRouter: Router = Router();
 
 bookRouter.get('', async (req: Request, res: Response, next: NextFunction) => {
-  container.get<BookController>(DITypes.TYPES.BookController).findBook(req, res, next);
+  container.get<BookController>(DITypes.TYPES.BookController).getBooks(req, res, next);
 });
 
 bookRouter.get('/:id', async (req: Request, res: Response, next: NextFunction) => {

@@ -9,7 +9,7 @@ import { container } from '../app';
 import { DITypes } from '../keys';
 import { userRouter } from './user.controller';
 import { local as localStrategy, facebook as facebookStrategy } from '../config';
-import { AuthService, UserService, TokenPair, TokenPairWithId } from '../services';
+import { TokenService, UserService, TokenPair, TokenPairWithId } from '../services';
 import { authenticate } from '../middleware';
 
 passport.use('local', localStrategy);
@@ -24,7 +24,7 @@ interface AuthenticateResponse {
 @injectable()
 export class AuthController {
   constructor (@inject(DITypes.TYPES.UserService) private userService: UserService,
-               @inject(DITypes.TYPES.AuthService) private authService: AuthService) {}
+               @inject(DITypes.TYPES.TokenService) private tokenService: TokenService) {}
 
   async signUp (req: Request, res: Response, next: NextFunction): Promise<void> {
     await check('email', 'Email is not valid').isEmail().run(req);
@@ -65,8 +65,8 @@ export class AuthController {
         if (!user) {
           return next(new httpErrors.Forbidden(info.message));
         }
-        const { accessToken, refreshToken, refreshTokenId }: TokenPairWithId = await this.authService.getTokenPairWithId(user.id, { userId: user.id });
-        await this.authService.addRefreshToken(refreshTokenId, user.id);
+        const { accessToken, refreshToken, refreshTokenId }: TokenPairWithId = await this.tokenService.getTokenPairWithId(user.id, { userId: user.id });
+        await this.tokenService.addRefreshToken(refreshTokenId, user.id);
         res.send({ accessToken: accessToken, refreshToken });
       })(req, res, next);
     } catch (err) {
@@ -77,7 +77,7 @@ export class AuthController {
   async refreshToken (req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
       const { refreshToken } = req.body;
-      const tokenPair: TokenPair = await this.authService.refreshToken(refreshToken, res.locals.tokenPayload);
+      const tokenPair: TokenPair = await this.tokenService.refreshToken(refreshToken, res.locals.tokenPayload);
       res.send({ accessToken: tokenPair.accessToken, refreshToken: tokenPair.refreshToken });
     } catch (err) {
       next(err);
@@ -87,7 +87,7 @@ export class AuthController {
   async signOut (req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
       const userId: string = res.locals.tokenPayload.userId;
-      await this.authService.removeRefreshToken(userId);
+      await this.tokenService.removeRefreshToken(userId);
       res.send({ message: 'Success' });
     } catch (err) {
       next(err);

@@ -20,7 +20,7 @@ export interface TokenPairWithId extends TokenPair {
 }
 
 @injectable()
-export class AuthService {
+export class TokenService {
   async getTokenPairWithId (userId: string, payload: PayloadToken): Promise<TokenPairWithId> {
     const accessTokenResult: GeneratedTokenResult = await generateToken(payload, config.accessToken);
     if (!accessTokenResult.token) {

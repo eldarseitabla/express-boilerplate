@@ -7,7 +7,7 @@ export namespace DITypes {
     AuthController: symbol;
     UserService: symbol;
     RefreshTokenService: symbol;
-    AuthService: symbol;
+    TokenService: symbol;
   }
 
   export const TYPES: Types = {
@@ -17,6 +17,6 @@ export namespace DITypes {
     AuthController: Symbol.for('AuthController'),
     UserService: Symbol.for('UserService'),
     RefreshTokenService: Symbol.for('RefreshTokenService'),
-    AuthService: Symbol.for('AuthService'),
+    TokenService: Symbol.for('TokenService'),
   };
 }

@@ -11,7 +11,7 @@ export const authenticate = async (req: Request, res: Response, next: NextFuncti
     const authorization: string = req.headers.authorization || '';
 
     if (!authorization) {
-      return next(new httpErrors.Forbidden(`${req.method} ${req.originalUrl}`));
+      return next(new httpErrors.Unauthorized(`${req.method} ${req.originalUrl}`));
     }
 
     const token = authorization.split(' ')[1];

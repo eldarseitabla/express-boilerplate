@@ -10,7 +10,7 @@ paths:
     post:
       summary: Sign Up User
       tags:
-        - UserApi
+        - AuthApi
       requestBody:
         required: true
         content:
@@ -24,7 +24,7 @@ paths:
     post:
       summary: Sign In User
       tags:
-        - UserApi
+        - AuthApi
       requestBody:
         required: true
         content:
@@ -34,8 +34,60 @@ paths:
       responses:
         200:
           $ref: "#/components/responses/Response"
-
+  /auth/refresh-tokens:
+    post:
+      summary: Refresh tokens
+      tags:
+        - AuthApi
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              description: RefreshToken
+              type: object
+              required:
+                - refreshToken
+              properties:
+                refreshToken:
+                  type: string
+              example: {
+                refreshToken: some-refresh-token
+              }
+      responses:
+        200:
+          description: Refresh token response
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - refreshToken
+                  - accessToken
+                properties:
+                  refreshToken:
+                    type: string
+                  accessToken:
+                    type: string
+                example: {
+                  refreshToken: some-refresh-token,
+                  accessToken: some-access-token,
+                }
+  /auth/sign-out:
     get:
+      security:
+        - bearerAuth: []
+      summary: sign out
+      tags:
+        - AuthApi
+      responses:
+        200:
+          $ref: "#/components/responses/Response"
+
+  /users:
+    get:
+      security:
+        - bearerAuth: []
       summary: Get all users
       tags:
         - UserApi
@@ -47,6 +99,10 @@ paths:
               schema:
                 $ref: "#/components/schemas/Users"
     delete:
+      security:
+        - bearerAuth: []
+      tags:
+        - UserApi
       summary: Delete all users
       operationId: deleteAllUsers
       responses:
@@ -55,6 +111,8 @@ paths:
 
   /users/{id}:
     delete:
+      security:
+        - bearerAuth: []
       summary: Delete account
       tags:
         - UserApi
@@ -70,75 +128,81 @@ paths:
         204:
           description: Success
 
-  /books:
-    # Adds a new book #
-    post:
-      summary: Adds a new book
-      tags:
-        - BookApi
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/Book"
-      responses:
-        200:
-          $ref: "#/components/responses/Response"
-
-    # Gets a books /notes?offset=100&limit=50 #
-    get:
-      summary: Gets a list of books
-      tags:
-        - BookApi
-      responses:
-        200:
-          description: OK
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/books'
-      parameters:
-        - in: query
-          name: offset
-          schema:
-            type: integer
-            minimum: 0
-            default: 0
-          required: false
-          description: The number of items to skip before starting to collect the result set.
-        - in: query
-          name: limit
-          schema:
-            type: integer
-            minimum: 1
-            maximum: 100
-            default: 10
-          required: false
-          description: The number of items to return.
-
-  # Gets a book #
-  /books/{bookId}:
-    get:
-      summary: Gets a book by ID
-      tags:
-        - BookApi
-      operationId: getBook
-      parameters:
-        - in: path
-          name: bookId
-          required: true
-          schema:
-            type: integer
-            format: int64
-      responses:
-        '200':
-          description: A Book object
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Book'
+#  /books:
+#    # Adds a new book #
+#    post:
+#      summary: Adds a new book
+#      tags:
+#        - BookApi
+#      requestBody:
+#        required: true
+#        content:
+#          application/json:
+#            schema:
+#              $ref: "#/components/schemas/Book"
+#      responses:
+#        200:
+#          $ref: "#/components/responses/Response"
+#
+#    # Gets a books /notes?offset=100&limit=50 #
+#    get:
+#      summary: Gets a list of books
+#      tags:
+#        - BookApi
+#      responses:
+#        200:
+#          description: OK
+#          content:
+#            application/json:
+#              schema:
+#                $ref: '#/components/schemas/books'
+#      parameters:
+#        - in: query
+#          name: offset
+#          schema:
+#            type: integer
+#            minimum: 0
+#            default: 0
+#          required: false
+#          description: The number of items to skip before starting to collect the result set.
+#        - in: query
+#          name: limit
+#          schema:
+#            type: integer
+#            minimum: 1
+#            maximum: 100
+#            default: 10
+#          required: false
+#          description: The number of items to return.
+#
+#  # Gets a book #
+#  /books/{bookId}:
+#    get:
+#      summary: Gets a book by ID
+#      tags:
+#        - BookApi
+#      operationId: getBook
+#      parameters:
+#        - in: path
+#          name: bookId
+#          required: true
+#          schema:
+#            type: integer
+#            format: int64
+#      responses:
+#        '200':
+#          description: A Book object
+#          content:
+#            application/json:
+#              schema:
+#                $ref: '#/components/schemas/Book'
 components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
   responses:
     Response:
       description: Common response

@@ -1,12 +1,12 @@
 import mongoose from 'mongoose';
 
 export type RefreshTokenDocument = mongoose.Document & {
-  token: string;
+  tokenId: string;
   userId: string;
 };
 
 const refreshTokenSchema = new mongoose.Schema({
-  token: String,
+  tokenId: String,
   userId: String,
 }, { timestamps: true });
 

@@ -19,22 +19,13 @@ export type UserDocument = mongoose.Document & {
   password: string;
   passwordResetToken: string;
   passwordResetExpires: Date;
-
   facebook: string;
-  tokens: AuthToken[];
-
   profile: Profile;
-
   comparePassword: comparePasswordFunction;
   gravatar: (size: number) => string;
 };
 
 type comparePasswordFunction = (candidatePassword: string, cb: (err: Error, isMatch: boolean) => {}) => void;
-
-export interface AuthToken {
-  accessToken: string;
-  kind: string;
-}
 
 const userSchema = new mongoose.Schema({
   email: { type: String, unique: true },

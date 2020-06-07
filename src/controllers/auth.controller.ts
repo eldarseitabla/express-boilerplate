@@ -9,7 +9,7 @@ import { container } from '../app';
 import { DITypes } from '../keys';
 import { userRouter } from './user.controller';
 import { local as localStrategy, facebook as facebookStrategy } from '../config';
-import { AuthService, UserService, TokenPair } from '../services';
+import { AuthService, UserService, TokenPair, TokenPairWithId } from '../services';
 import { authenticate } from '../middleware';
 
 passport.use('local', localStrategy);
@@ -57,7 +57,6 @@ export class AuthController {
       const errors = validationResult(req);
 
       if (!errors.isEmpty()) {
-        console.log('ERRORS:', errors);
         return next(new httpErrors.UnprocessableEntity(JSON.stringify(errors.array())));
       }
 
@@ -66,9 +65,9 @@ export class AuthController {
         if (!user) {
           return next(new httpErrors.Forbidden(info.message));
         }
-        const { token, refreshToken }: TokenPair = await this.authService.getTokenPair(user.id,
-          { userId: user.id });
-        res.send({ token: token, refreshToken });
+        const { accessToken, refreshToken, refreshTokenId }: TokenPairWithId = await this.authService.getTokenPairWithId(user.id, { userId: user.id });
+        await this.authService.addRefreshToken(refreshTokenId, user.id);
+        res.send({ accessToken: accessToken, refreshToken });
       })(req, res, next);
     } catch (err) {
       next(err);
@@ -79,14 +78,20 @@ export class AuthController {
     try {
       const { refreshToken } = req.body;
       const tokenPair: TokenPair = await this.authService.refreshToken(refreshToken, res.locals.tokenPayload);
-      res.send({ token: tokenPair.token, refreshToken: tokenPair.refreshToken });
+      res.send({ accessToken: tokenPair.accessToken, refreshToken: tokenPair.refreshToken });
     } catch (err) {
       next(err);
     }
   }
 
-  async signOut (req: Request): Promise<void> {
-    req.logout();
+  async signOut (req: Request, res: Response, next: NextFunction): Promise<void> {
+    try {
+      const userId: string = res.locals.tokenPayload.userId;
+      await this.authService.removeRefreshToken(userId);
+      res.send({ message: 'Success' });
+    } catch (err) {
+      next(err);
+    }
   }
 }
 
@@ -103,13 +108,13 @@ authRouter.post('/sign-in', async (req: Request, res: Response, next: NextFuncti
 });
 
 // [ ]
-authRouter.post('/refresh-token', authenticate, async (req: Request, res: Response, next: NextFunction) => {
+authRouter.post('/refresh-tokens', async (req: Request, res: Response, next: NextFunction) => {
   container.get<AuthController>(DITypes.TYPES.AuthController).refreshToken(req, res, next);
 });
 
 // [ ]
-authRouter.get('/sign-out', async (req: Request) => {
-  container.get<AuthController>(DITypes.TYPES.AuthController).signOut(req);
+authRouter.get('/sign-out', authenticate, async (req: Request, res: Response, next: NextFunction) => {
+  container.get<AuthController>(DITypes.TYPES.AuthController).signOut(req, res, next);
 });
 
 // [ ]

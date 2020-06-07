@@ -1,11 +1,13 @@
 import request, { Response } from 'supertest';
 import assert from 'assert';
+import { createSandbox } from 'sinon';
 import { app } from '../../app';
-import { issueToken } from '../helpers/issue-token';
 import { UserDocument, UserMongo as User, RefreshTokenMongo as RefreshToken } from '../../models';
+import { config } from '../../config';
+
+const sandbox = createSandbox();
 
 describe('auth.controller (acceptance)', () => {
-  let user: UserDocument;
 
   const userData: { email: string; password: string } = {
     email: 'test@email.com',
@@ -26,8 +28,12 @@ describe('auth.controller (acceptance)', () => {
     await RefreshToken.deleteMany({});
   });
 
-  it('User can succesfully login', async () => {
-    user = new User(userData);
+  afterEach('after each', () => {
+    sandbox.verifyAndRestore();
+  });
+
+  it('User can successful login', async () => {
+    const user: UserDocument = new User(userData);
     await user.save();
     const { body: result }: Response = await request(app)
       .post('/auth/sign-in')
@@ -37,124 +43,166 @@ describe('auth.controller (acceptance)', () => {
       })
       .expect('Content-Type', 'application/json; charset=utf-8')
       .expect(200);
-    assert.ok(typeof result.token === 'string');
+    assert.ok(typeof result.accessToken === 'string');
     assert.ok(typeof result.refreshToken === 'string');
 
-    const refreshTokenRes: Response = await request(app)
-      .post('/auth/refresh-token')
-      .set('Authorization', 'Bearer ' + result.token)
+    const { body: refreshTokenRes }: Response = await request(app)
+      .post('/auth/refresh-tokens')
       .send({
         refreshToken: result.refreshToken,
       })
       .expect('Content-Type', /json/)
-      .expect('Content-Length', '322')
       .expect(200);
-    assert.ok(typeof refreshTokenRes.body.token === 'string');
-    assert.ok(typeof refreshTokenRes.body.refreshToken === 'string');
+    assert.ok(typeof refreshTokenRes.accessToken === 'string');
+    assert.ok(typeof refreshTokenRes.refreshToken === 'string');
   });
 
-  // TODO User gets 403 on invalid credentials
-  it.skip('User gets 403 on invalid credentials', async () => {
+  it('User gets 403 on invalid credentials', async () => {
     await request(app)
-      .post('/auth/login')
+      .post('/auth/sign-in')
       .send({
-        login: 'INVALID',
+        email: 'INVALID@email.com',
         password: 'INVALID',
       })
       .expect(403);
   });
 
-  // TODO User receives 401 on expired token
-  it.skip('User receives 401 on expired token', async () => {
-    const expiredToken: string = issueToken({ id: 1 }, { expiresIn: '1ms' });
-    await app
+  it('User receives 401 on expired token', async () => {
+    // const expiredToken: string = issueToken({ id: 1 }, { expiresIn: '1ms' });
+    sandbox.stub(config.accessToken, 'expiresIn').value('1ms');
+
+    const user: UserDocument = new User(userData);
+    await user.save();
+    const { body: result }: Response = await request(app)
+      .post('/auth/sign-in')
+      .send({
+        email: userData.email,
+        password: userData.password,
+      })
+      .expect('Content-Type', 'application/json; charset=utf-8')
+      .expect(200);
+
+    const expiredToken: string = result.accessToken;
+
+    await request(app)
       .get('/users')
       .set('Authorization', `Bearer ${expiredToken}`)
       .expect(401);
   });
 
-  // TODO User can get new access token using refresh token
-  it.skip('User can get new access token using refresh token', async () => {
-    const res = await request(app)
-      .post('/auth/refresh')
+  it('User can get new access token using refresh token', async () => {
+    const user: UserDocument = new User(userData);
+    await user.save();
+    const { body: result }: Response = await request(app)
+      .post('/auth/sign-in')
       .send({
-        refreshToken: 'REFRESH_TOKEN_1',
+        email: userData.email,
+        password: userData.password,
+      })
+      .expect('Content-Type', 'application/json; charset=utf-8')
+      .expect(200);
+
+    const { body: res }: Response = await request(app)
+      .post('/auth/refresh-tokens')
+      .send({
+        refreshToken: result.refreshToken,
       }).expect(200);
-    assert.ok(typeof res.body.token === 'string');
-    assert.ok(typeof res.body.refreshToken === 'string');
+    assert.ok(typeof res.accessToken === 'string');
+    assert.ok(typeof res.refreshToken === 'string');
   });
 
-  // TODO User get 404 on invalid refresh token
-  it.skip('User get 404 on invalid refresh token', async () => {
+  it('User get 404 on invalid refresh token', async () => {
     await request(app)
-      .post('/auth/refresh')
+      .post('/auth/refresh-tokens')
       .send({
         refreshToken: 'INVALID_REFRESH_TOKEN',
       }).expect(404);
   });
 
-  // TODO User can use refresh token only once
-  it.skip('User can use refresh token only once', async () => {
-    const firstResponse: Response = await request(app)
-      .post('/auth/refresh')
+  it('User can use refresh token only once', async () => {
+    const user: UserDocument = new User(userData);
+    await user.save();
+    const { body: result }: Response = await request(app)
+      .post('/auth/sign-in')
       .send({
-        refreshToken: 'REFRESH_TOKEN_ONCE',
+        email: userData.email,
+        password: userData.password,
+      })
+      .expect('Content-Type', 'application/json; charset=utf-8')
+      .expect(200);
+
+    const { body: firstResponse }: Response = await request(app)
+      .post('/auth/refresh-tokens')
+      .send({
+        refreshToken: result.refreshToken,
       }).expect(200);
-    assert.ok(typeof firstResponse.body.token === 'string');
-    assert.ok(typeof firstResponse.body.refreshToken === 'string');
+    assert.ok(typeof firstResponse.accessToken === 'string');
+    assert.ok(typeof firstResponse.refreshToken === 'string');
 
     await request(app)
-      .post('/auth/refresh')
+      .post('/auth/refresh-tokens')
       .send({
-        refreshToken: 'REFRESH_TOKEN_ONCE',
+        refreshToken: result.refreshToken,
       }).expect(404);
   });
 
-  // TODO Refresh tokens become invalid on logout
-  it.skip('Refresh tokens become invalid on logout', async () => {
-    await request(app)
-      .post('/auth/logout')
-      .set('Authorization', `Bearer ${issueToken({ id: 2 })}`)
+  it('Refresh tokens become invalid on logout', async () => {
+    const user: UserDocument = new User(userData);
+    await user.save();
+    const { body: result }: Response = await request(app)
+      .post('/auth/sign-in')
+      .send({
+        email: userData.email,
+        password: userData.password,
+      })
+      .expect('Content-Type', 'application/json; charset=utf-8')
       .expect(200);
 
-    await request(app).post('/auth/refresh').send({
-      refreshToken: 'REFRESH_TOKEN_TO_DELETE_ON_LOGOUT',
+    await request(app)
+      .get('/auth/sign-out')
+      .set('Authorization', `Bearer ${result.accessToken}`)
+      .expect(200);
+
+    await request(app).post('/auth/refresh-tokens').send({
+      refreshToken: result.refreshToken,
     }).expect(404);
   });
 
-  // TODO Multiple refresh tokens are valid
-  it.skip('Multiple refresh tokens are valid', async () => {
-    const firstLoginResponse = await request(app)
-      .post('/auth/login')
+  it('Multiple refresh tokens are valid', async () => {
+    const user: UserDocument = new User(userData);
+    await user.save();
+    const { body: firstLoginResponse }: Response = await request(app)
+      .post('/auth/sign-in')
       .send({
-        login: 'user2',
-        password: 'user2',
+        email: userData.email,
+        password: userData.password,
       })
       .expect(200);
-    const secondLoginResponse = await request(app)
-      .post('/auth/login')
+
+    const { body: secondLoginResponse }: Response = await request(app)
+      .post('/auth/sign-in')
       .send({
-        login: 'user2',
-        password: 'user2',
+        email: userData.email,
+        password: userData.password,
       })
       .expect(200);
 
 
-    const firstRefreshResponse = await request(app)
-      .post('/auth/refresh')
-      .send({
-        refreshToken: firstLoginResponse.body.refreshToken,
-      })
-      .expect(200);
-    assert.ok(typeof firstRefreshResponse.body.token === 'string');
-    assert.ok(typeof firstRefreshResponse.body.refreshToken === 'string');
-
-    const secondRefreshResponse = await request(app)
-      .post('/auth/refresh')
-      .send({
-        refreshToken: secondLoginResponse.body.refreshToken,
-      }).expect(200);
-    assert.ok(typeof secondRefreshResponse.body.token === 'string');
-    assert.ok(typeof secondRefreshResponse.body.refreshToken === 'string');
+    // const { body: firstRefreshResponse }: Response = await request(app)
+    //   .post('/auth/refresh-tokens')
+    //   .send({
+    //     refreshToken: firstLoginResponse.refreshToken,
+    //   })
+    //   .expect(201);
+    // assert.ok(typeof firstRefreshResponse.accessToken === 'string');
+    // assert.ok(typeof firstRefreshResponse.refreshToken === 'string');
+    //
+    // const { body: secondRefreshResponse }: Response = await request(app)
+    //   .post('/auth/refresh-tokens')
+    //   .send({
+    //     refreshToken: secondLoginResponse.refreshToken,
+    //   }).expect(202);
+    // assert.ok(typeof secondRefreshResponse.accessToken === 'string');
+    // assert.ok(typeof secondRefreshResponse.refreshToken === 'string');
   });
 });

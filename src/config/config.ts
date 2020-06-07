@@ -53,12 +53,12 @@ switch (process.env.NODE_ENV) {
     break;
 }
 
-export interface Redis {
+type Redis = {
   url: string;
   options: object;
 }
 
-export interface Postgres {
+type Postgres = {
   url: string;
   options: {
     logging: boolean;
@@ -66,7 +66,7 @@ export interface Postgres {
   };
 }
 
-export interface MongoDb {
+type MongoDb = {
   url: string;
   options: {
     useNewUrlParser: boolean;
@@ -78,20 +78,26 @@ export interface MongoDb {
   };
 }
 
-export enum Env {
+enum Env {
   production = 'production',
   development = 'development',
   test = 'test',
 }
 
-export interface Token {
+export enum TokenType {
+  access = 'access',
+  refresh = 'refresh',
+}
+
+export type Token = {
+  type: TokenType;
   secret: string;
   algorithm: Algorithm;
   issuer: string;
-  expiresIn?: number;
+  expiresIn: string;
 }
 
-export interface Config {
+export type Config = {
   env: Env | string;
   protocol: string;
   host: string;
@@ -112,7 +118,8 @@ export interface Config {
   googleAppSecret: string;
   twitterClientID: string;
   twitterClientSecret: string;
-  token: Token;
+  accessToken: Token;
+  refreshToken: Token;
   swaggerUi: {
     options: {
       swaggerOptions: {
@@ -123,7 +130,7 @@ export interface Config {
 }
 
 export const config: Config = {
-  env: process.env.NODE_ENV,
+  env: process.env.NODE_ENV || '',
   protocol: process.env.PROTOCOL || '',
   host: process.env.HOST || '',
   // @ts-ignore
@@ -164,13 +171,19 @@ export const config: Config = {
   googleAppSecret: process.env.GOOGLE_APP_SECRET || '',
   twitterClientID: process.env.TWITTER_CLIENT_ID || '',
   twitterClientSecret: process.env.TWITTER_CLIENT_SECRET || '',
-  token: {
-    secret: process.env.AUTH_TOKEN_SECRET || '',
-    // @ts-ignore
-    algorithm: process.env.AUTH_TOKEN_ALGORITHM || 'HS512',
-    issuer: process.env.AUTH_TOKEN_ISSUER || '',
-    // @ts-ignore
-    expiresIn: +process.env.AUTH_TOKEN_EXPIRATION_TIME || 3600,
+  accessToken: {
+    type: TokenType.access,
+    secret: process.env.ACCESS_TOKEN_SECRET || '',
+    algorithm: 'HS512',
+    issuer: process.env.ACCESS_TOKEN_ISSUER || '',
+    expiresIn: process.env.ACCESS_TOKEN_EXPIRATION_TIME || '2m',
+  },
+  refreshToken: {
+    type: TokenType.refresh,
+    secret: process.env.REFRESH_TOKEN_SECRET || '',
+    algorithm: 'HS512',
+    issuer: process.env.ACCESS_TOKEN_ISSUER || '',
+    expiresIn: process.env.REFRESH_TOKEN_EXPIRATION_TIME || '3m',
   },
   swaggerUi: {
     options: {

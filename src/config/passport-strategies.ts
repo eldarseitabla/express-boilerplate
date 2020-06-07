@@ -49,7 +49,7 @@ export const facebook = new FacebookStrategy({
           return done(undefined, false, { message: 'User not found.' });
         }
         user.facebook = profile.id;
-        user.tokens.push({ kind: 'facebook', accessToken });
+        // user.tokens.push({ kind: 'facebook', accessToken });
         user.profile.name = user.profile.name || `${profile.displayName}`;
         user.profile.gender = user.profile.gender || profile._json.gender; // eslint-disable-line
         user.profile.picture = user.profile.picture || `https://graph.facebook.com/${profile.id}/picture?type=large`;

@@ -31,7 +31,6 @@ container.bind<RefreshTokenService>(DITypes.TYPES.RefreshTokenService).to(Refres
 container.bind<AuthService>(DITypes.TYPES.AuthService).to(AuthService).inSingletonScope();
 
 async function init (): Promise<void> {
-  console.log('config.mongo.url', config.mongo.url);
   await mongoose.connect(config.mongo.url, config.mongo.options);
 }
 

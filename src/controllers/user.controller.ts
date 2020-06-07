@@ -5,7 +5,7 @@ import { check, sanitize, validationResult } from 'express-validator';
 import { DITypes } from '../keys';
 import { container } from '../app';
 import { UserService } from '../services';
-import { UserMongo as User, UserDocument, AuthToken, Provider } from '../models';
+import { UserMongo as User, UserDocument, Provider } from '../models';
 import { authenticate } from '../middleware';
 
 @injectable()
@@ -100,7 +100,7 @@ export class UserController {
       const user: UserDocument | null = await User.findById(userId);
       if (!user) return next(new httpErrors.NotFound('User not found'));
       user[provider] = '';
-      user.tokens = user.tokens.filter((token: AuthToken) => token.kind !== provider);
+      // user.tokens = user.tokens.filter((token: AuthToken) => token.kind !== provider);
       await user.save();
       res.send({ message: `${provider} account has been unlinked.` });
     } catch (err) {
@@ -152,11 +152,11 @@ export class UserController {
 
 export const userRouter: Router = Router();
 
-userRouter.patch('/:id', async (req: Request, res: Response, next: NextFunction) => {
+userRouter.patch('/:id', authenticate, async (req: Request, res: Response, next: NextFunction) => {
   container.get<UserController>(DITypes.TYPES.UserController).patchById(req, res, next);
 });
 
-userRouter.get('', async (req: Request, res: Response) => {
+userRouter.get('', authenticate, async (req: Request, res: Response) => {
   container.get<UserController>(DITypes.TYPES.UserController).find(req, res);
 });
 
@@ -164,11 +164,11 @@ userRouter.get('/:id', authenticate, async (req: Request, res: Response) => {
   container.get<UserController>(DITypes.TYPES.UserController).getAccount(req, res);
 });
 
-userRouter.delete('/:id', async (req: Request, res: Response, next: NextFunction) => {
+userRouter.delete('/:id', authenticate, async (req: Request, res: Response, next: NextFunction) => {
   container.get<UserController>(DITypes.TYPES.UserController).deleteById(req, res, next);
 });
 
-userRouter.delete('', async (req: Request, res: Response, next: NextFunction) => {
+userRouter.delete('', authenticate, async (req: Request, res: Response, next: NextFunction) => {
   container.get<UserController>(DITypes.TYPES.UserController).deleteAll(req, res, next);
 });
 
@@ -180,7 +180,7 @@ userRouter.post('/forgot', async (req: Request, res: Response, next: NextFunctio
   container.get<UserController>(DITypes.TYPES.UserController).forgot(req, res, next);
 });
 
-userRouter.post('/update-password', async (req: Request, res: Response, next: NextFunction) => {
+userRouter.post('/update-password', authenticate, async (req: Request, res: Response, next: NextFunction) => {
   container.get<UserController>(DITypes.TYPES.UserController).updatePassword(req, res, next);
 });
 

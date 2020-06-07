@@ -9,13 +9,18 @@ Express Boilerplate
 - [x] Logging
 - [x] TypeScript
 - [x] Example Unit-test
-- [x] Config module
+- [x] Config
 - [x] Dependency Injection
+- [x] MongoDb
+- [x] Authentication
+- [ ] Example Product
 - [ ] Authorization
-- [ ] Implement routes with in memory in variable data
-- [ ] Unit tests for routes
-- [ ] Prometheus Grafana in App and in Docker Compose
-- [ ] MongoDb
+- [ ] Logging to Logstash
+- [ ] Memory Prometheus Grafana
+    - [ ] current memory consumption;
+    - [ ] current processor consumption;
+    - [ ] tick frequency;
+    - [ ] tick duration;
 - [ ] Postgres
 - [ ] Redis
 

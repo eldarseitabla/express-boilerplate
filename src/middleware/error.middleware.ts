@@ -16,7 +16,11 @@ const errorMiddleware: ErrorRequestHandler = async (error: httpErrors.HttpError,
     if (/* !config.error.emitStackTrace */ !(false)) { // eslint-disable-line
       delete message.stack;
     }
-    logger.error(error);
+    if (error.status === 403 || error.status === 401) {
+      logger.warn(error);
+    } else {
+      logger.error(error);
+    }
     res.send(message);
   } else {
     next();

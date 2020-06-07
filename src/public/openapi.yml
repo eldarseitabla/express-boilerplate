@@ -1,83 +1,211 @@
-openapi: 3.0.2
+openapi: 3.0.3
 
 info:
   version: "1"
-  title: "Books"
-  description: "Demo Books"
+  title: "Express Boilerplate"
+  description: "Demo Express Boilerplate"
 
 paths:
-  /books:
-    # Adds a new book #
+  /auth/sign-up:
     post:
-      summary: Adds a new book
+      summary: Sign Up User
       tags:
-        - BookApi
+        - AuthApi
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/Book"
+              $ref: "#/components/schemas/UserSignUp"
       responses:
         200:
-          $ref: "#/components/responses/BookAddResponse"
-
-    # Gets a books /notes?offset=100&limit=50 #
-    get:
-      summary: Gets a list of books
+          $ref: "#/components/responses/Response"
+  /auth/sign-in:
+    post:
+      summary: Sign In User
       tags:
-        - BookApi
+        - AuthApi
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UserSignIn"
+      responses:
+        200:
+          $ref: "#/components/responses/Response"
+  /auth/refresh-tokens:
+    post:
+      summary: Refresh tokens
+      tags:
+        - AuthApi
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              description: RefreshToken
+              type: object
+              required:
+                - refreshToken
+              properties:
+                refreshToken:
+                  type: string
+              example: {
+                refreshToken: some-refresh-token
+              }
+      responses:
+        200:
+          description: Refresh token response
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - refreshToken
+                  - accessToken
+                properties:
+                  refreshToken:
+                    type: string
+                  accessToken:
+                    type: string
+                example: {
+                  refreshToken: some-refresh-token,
+                  accessToken: some-access-token,
+                }
+  /auth/sign-out:
+    get:
+      security:
+        - bearerAuth: []
+      summary: sign out
+      tags:
+        - AuthApi
+      responses:
+        200:
+          $ref: "#/components/responses/Response"
+
+  /users:
+    get:
+      security:
+        - bearerAuth: []
+      summary: Get all users
+      tags:
+        - UserApi
       responses:
         200:
           description: OK
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ArrayOfBooks'
-      parameters:
-        - in: query
-          name: offset
-          schema:
-            type: integer
-            minimum: 0
-            default: 0
-          required: false
-          description: The number of items to skip before starting to collect the result set.
-        - in: query
-          name: limit
-          schema:
-            type: integer
-            minimum: 1
-            maximum: 100
-            default: 10
-          required: false
-          description: The number of items to return.
-
-  # Gets a book #
-  /books/{bookId}:
-    get:
-      summary: Gets a book by ID
+                $ref: "#/components/schemas/Users"
+    delete:
+      security:
+        - bearerAuth: []
       tags:
-        - BookApi
-      operationId: getBook
+        - UserApi
+      summary: Delete all users
+      operationId: deleteAllUsers
+      responses:
+        204:
+          description: Success
+
+  /users/{id}:
+    delete:
+      security:
+        - bearerAuth: []
+      summary: Delete account
+      tags:
+        - UserApi
+      operationId: deleteUserById
       parameters:
-        - in: path
-          name: bookId
+        - name: id
+          in: path
+          description: User ID
           required: true
           schema:
-            type: integer
-            format: int64
+            type: string
       responses:
-        '200':
-          description: A Book object
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Book'
+        204:
+          description: Success
+
+#  /books:
+#    # Adds a new book #
+#    post:
+#      summary: Adds a new book
+#      tags:
+#        - BookApi
+#      requestBody:
+#        required: true
+#        content:
+#          application/json:
+#            schema:
+#              $ref: "#/components/schemas/Book"
+#      responses:
+#        200:
+#          $ref: "#/components/responses/Response"
+#
+#    # Gets a books /notes?offset=100&limit=50 #
+#    get:
+#      summary: Gets a list of books
+#      tags:
+#        - BookApi
+#      responses:
+#        200:
+#          description: OK
+#          content:
+#            application/json:
+#              schema:
+#                $ref: '#/components/schemas/books'
+#      parameters:
+#        - in: query
+#          name: offset
+#          schema:
+#            type: integer
+#            minimum: 0
+#            default: 0
+#          required: false
+#          description: The number of items to skip before starting to collect the result set.
+#        - in: query
+#          name: limit
+#          schema:
+#            type: integer
+#            minimum: 1
+#            maximum: 100
+#            default: 10
+#          required: false
+#          description: The number of items to return.
+#
+#  # Gets a book #
+#  /books/{bookId}:
+#    get:
+#      summary: Gets a book by ID
+#      tags:
+#        - BookApi
+#      operationId: getBook
+#      parameters:
+#        - in: path
+#          name: bookId
+#          required: true
+#          schema:
+#            type: integer
+#            format: int64
+#      responses:
+#        '200':
+#          description: A Book object
+#          content:
+#            application/json:
+#              schema:
+#                $ref: '#/components/schemas/Book'
 components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
   responses:
-    BookAddResponse:
-      description: Book add response
+    Response:
+      description: Common response
       content:
         application/json:
           schema:
@@ -87,7 +215,7 @@ components:
             properties:
               status:
                 type: string
-                enum: [success, error]
+                enum: [ok, error]
               code:
                 type: number
                 example:
@@ -113,7 +241,38 @@ components:
           The `id` value returned in the response can be used as
           the `bookId` parameter in `GET /books/{bookId}`.
   schemas:
-    # Book #
+    UserSignUp:
+      description: UserSignUp
+      type: object
+      required:
+        - email
+        - password
+        - confirmPassword
+      properties:
+        email:
+          type: string
+        password:
+          type: string
+        confirmPassword:
+          type: string
+      example:
+        email: test@email.com
+        password: userpassword
+        confirmPassword: userpassword
+    UserSignIn:
+      description: UserSignIn
+      type: object
+      required:
+        - email
+        - password
+      properties:
+        email:
+          type: string
+        password:
+          type: string
+      example:
+        email: test@email.com
+        password: userpassword
     Book:
       description: Book schema
       type: object
@@ -143,12 +302,26 @@ components:
         author: Some author
         description: Some description
         image: images/some-image.jpg
+    User:
+      example: {
+        tokens: [],
+        _id: "5eb9a1968b8d5b36155290ac",
+        email: "test@email.com",
+        password: "$2a$10$kcq5VxeRO7ZS01FsUAqshOG.6b9czvW27beI6jSfsX7CHdYR4cL2m",
+        createdAt: "2020-05-11T19:03:50.581Z",
+        updatedAt: "2020-05-11T19:03:50.581Z",
+        __v: 0
+      }
 
     # ArrayOfBooks #
-    ArrayOfBooks:
+    Books:
       description: List of Books
       type: array
       items:
         $ref: '#/components/schemas/Book'
 
-
+    Users:
+      description: List of Users
+      type: array
+      items:
+        $ref: '#/components/schemas/User'

@@ -1,43 +1,40 @@
+import { config } from './config';
 import { getLogger } from 'log4js';
-import './utils/env';
 import { Server } from 'http';
 import { app } from './app';
-import { config } from './config';
 
 const logger = getLogger('[server]');
 
 let server: Server;
-(async() => {
+(async () => {
   try {
-    server = await app.listen(config.port, config.host);
-    logger.info('App is running at http://%s:%d in %s mode', config.host, config.port, process.env.NODE_ENV);
+    await app.get('init')();
+    server = await app.listen(app.get('port'), config.host);
+    logger.info('App is running at http://%s:%d in %s mode', config.host, app.get('port'), process.env.NODE_ENV);
   } catch (err) {
-    console.error(err);
     logger.error({ message: 'Error start server', err });
     process.exit(1);
   }
 })();
 
 process.on('SIGINT', () => {
-  logger.debug('Start Signal is SIGINT ...');
   server.close((error) => {
     if (error) {
-      logger.error(`Signal is SIGINT ${error.message}`);
+      logger.error(`SIGINT ${error.message}`);
       process.exit(1);
     }
-    logger.debug('Done Signal is SIGINT');
+    logger.debug('SIGINT');
     process.exit(0);
   });
 });
 
 process.on('SIGTERM', () => {
-  logger.debug('Signal is SIGTERM');
   server.close((error) => {
     if (error) {
-      logger.error(`Signal is SIGTERM ${error.message}`);
+      logger.error(`SIGTERM ${error.message}`);
       process.exit(1);
     }
-    logger.debug('Done Signal is SIGTERM');
+    logger.debug('SIGTERM');
     process.exit(0);
   });
 });

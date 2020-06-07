@@ -1,5 +1,5 @@
-# boilerplate-backend
-Boilerplate Backend
+# express-boilerplate
+Express Boilerplate
 
 ### Checklist
 - [x] Project Structure modules, directories and files
@@ -7,12 +7,24 @@ Boilerplate Backend
 - [x] Start application
 - [x] Error Handling
 - [x] Logging
-- [x] Test unit
 - [x] TypeScript
-- [ ] Prometheus Grafana in App and in Docker Compose
-- [ ] Config module
-- [ ] Dependency Injection
-- [ ] MongoDb
+- [x] Example Unit-test
+- [x] Config
+- [x] Dependency Injection
+- [x] MongoDb
+- [ ] Authentication
+    - [x] Local
+    - [ ] Facebook
+    - [ ] Google
+    - [ ] Twitter
+- [ ] Example Product
+- [ ] Authorization
+- [ ] Logging to Logstash
+- [ ] Metrics via Prometheus Grafana
+    - [ ] current memory consumption;
+    - [ ] current processor consumption;
+    - [ ] tick frequency;
+    - [ ] tick duration;
 - [ ] Postgres
 - [ ] Redis
 

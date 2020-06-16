@@ -27,21 +27,13 @@ export class AuthController {
                @inject(DITypes.TYPES.TokenService) private tokenService: TokenService) {}
 
   async signUp (req: Request, res: Response, next: NextFunction): Promise<void> {
-    await check('email', 'Email is not valid').isEmail().run(req);
-    await check('password', 'Password must be at least 4 characters long').isLength({ min: 4 }).run(req);
-    await check('confirmPassword', 'Passwords do not match').equals(req.body.password).run(req);
-    // eslint-disable-next-line @typescript-eslint/camelcase
-    await body('email').normalizeEmail({ gmail_remove_dots: false }).run(req);
-
-    const errors = validationResult(req);
-
-    if (!errors.isEmpty()) {
-      return next(new httpErrors.UnprocessableEntity(JSON.stringify(errors.array())));
-    }
-
     try {
+      const errors = await this.userService.validateSignUp(req);
+      if (!errors.isEmpty()) {
+        return next(new httpErrors.UnprocessableEntity(JSON.stringify(errors.array())));
+      }
       await this.userService.signUp(req.body.email, req.body.password);
-      res.send({ message: 'Success' });
+      res.status(200).json({ message: 'Success' });
     } catch (err) {
       return next(err);
     }
@@ -97,24 +89,23 @@ export class AuthController {
 
 export const authRouter: Router = Router();
 
-// [x]
 authRouter.post('/sign-up', async (req: Request, res: Response, next: NextFunction) => {
-  container.get<AuthController>(DITypes.TYPES.AuthController).signUp(req, res, next);
+  await container.get<AuthController>(DITypes.TYPES.AuthController).signUp(req, res, next);
 });
 
 // [x]
 authRouter.post('/sign-in', async (req: Request, res: Response, next: NextFunction) => {
-  container.get<AuthController>(DITypes.TYPES.AuthController).signIn(req, res, next);
+  await container.get<AuthController>(DITypes.TYPES.AuthController).signIn(req, res, next);
 });
 
 // [ ]
 authRouter.post('/refresh-tokens', async (req: Request, res: Response, next: NextFunction) => {
-  container.get<AuthController>(DITypes.TYPES.AuthController).refreshToken(req, res, next);
+  await container.get<AuthController>(DITypes.TYPES.AuthController).refreshToken(req, res, next);
 });
 
 // [ ]
 authRouter.get('/sign-out', authenticate, async (req: Request, res: Response, next: NextFunction) => {
-  container.get<AuthController>(DITypes.TYPES.AuthController).signOut(req, res, next);
+  await container.get<AuthController>(DITypes.TYPES.AuthController).signOut(req, res, next);
 });
 
 // [ ]

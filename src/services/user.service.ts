@@ -1,11 +1,28 @@
 import { injectable } from 'inversify';
 import crypto from 'crypto';
+import { Request } from 'express';
 import nodemailer from 'nodemailer';
 import httpErrors from 'http-errors';
 import { UserMongo as User, UserDocument } from '../models';
+import { body, check, validationResult, ValidationError, Result } from 'express-validator';
 
 @injectable()
 export class UserService {
+
+  async validateSignUp (req: Request): Promise<Result<ValidationError>> {
+    await check('email', 'Email is empty').not().isEmpty().run(req);
+    await check('email', 'Email is not valid').isEmail().run(req);
+    await check('password', 'Password is empty').not().isEmpty().run(req);
+    const minChars: number = 6;
+    await check('password', `Password must be at least ${minChars} characters long`).isLength({ min: minChars }).run(req);
+    await check('confirmPassword', 'Confirm password is empty').not().isEmpty().run(req);
+    await check('confirmPassword', 'Passwords do not match').equals(req.body.password).run(req);
+    // eslint-disable-next-line @typescript-eslint/camelcase
+    await body('email').normalizeEmail({ gmail_remove_dots: false }).run(req);
+
+    return validationResult(req);
+  }
+
   async signUp (email: string, password: string): Promise<void> {
     const user: UserDocument = new User({
       email,

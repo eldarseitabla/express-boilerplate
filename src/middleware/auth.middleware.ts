@@ -8,7 +8,7 @@ import { TokenExpiredError } from 'jsonwebtoken';
 
 export const authenticate = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const authorization: string = req.headers.authorization || '';
+    const authorization: string = req.get('Authorization') || '';
 
     if (!authorization) {
       return next(new httpErrors.Unauthorized(`${req.method} ${req.originalUrl}`));

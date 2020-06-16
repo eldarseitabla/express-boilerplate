@@ -12,6 +12,10 @@ Express Boilerplate
 - [x] Config
 - [x] Dependency Injection
 - [x] MongoDb
+- [ ] Client([React Boilerplate](https://github.com/eldarseytablaev/react-boilerplate))
+    - [x] Sign Up
+    - [x] Sign In
+    - [x] Sign out
 - [ ] Authentication
     - [x] Local
     - [ ] Facebook
@@ -49,9 +53,14 @@ npm start
 ```
 
 - Development
-```
-npm start:dev
-```
+    ```
+    npm run clean
+    npm run build
+    npm start:dev
+    ```
+
+- Client/Frontend flow created
+
 
 ## Docker
 ### Run need services for development

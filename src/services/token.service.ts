@@ -53,7 +53,7 @@ export class TokenService {
         throw new httpErrors.NotFound();
       }
 
-      await RefreshToken.remove({ tokenId: refreshToken.tokenId });
+      await RefreshToken.deleteMany({ tokenId: refreshToken.tokenId });
 
       const tokenPairWithId: TokenPairWithId = await this.getTokenPairWithId(refreshToken.userId, payload);
 
@@ -72,7 +72,7 @@ export class TokenService {
   }
 
   async removeRefreshToken (userId: string): Promise<void> {
-    await RefreshToken.remove({ userId });
+    await RefreshToken.deleteMany({ userId });
   }
 
   async addRefreshToken (tokenId: string, userId: string): Promise<void> {

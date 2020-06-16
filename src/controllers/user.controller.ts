@@ -76,7 +76,7 @@ export class UserController {
   async deleteById (req: Request, res: Response, next: NextFunction): Promise<void> {
     const { id: userId } = req.params;
     try {
-      await User.remove({ _id: userId });
+      await User.deleteOne({ _id: userId });
       req.logout();
       res.status(204).send();
     } catch (err) {
@@ -86,7 +86,7 @@ export class UserController {
 
   async deleteAll (req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
-      await User.remove({});
+      await User.deleteMany({});
       res.status(204).send();
     } catch (err) {
       next(err);
